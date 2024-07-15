@@ -10,15 +10,31 @@ export ZSH="$HOME/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
-if command -v tmux >/dev/null 2>&1; then
-  if [ -z "$TMUX" ]; then
-    tmux attach -t default || tmux new -s default
-  fi
-fi
+
+start_tmux() {
+    # Check if tmux is installed
+    if command -v tmux >/dev/null 2>&1; then
+        # Check if we're already inside a tmux session
+        if [ -z "$TMUX" ]; then
+            # Check if a tmux session named 'default' exists
+            if tmux has-session -t default 2>/dev/null; then
+                # Attach to the existing 'default' session
+                tmux attach -t default
+            else
+                # Create a new tmux session named 'default'
+                tmux new -s default
+            fi
+        fi
+    fi
+}
+
+
 alias nano='nvim'
 alias vi='nvim'
 #export GTK_THEME=Catppuccin-Dark
-
+#
+#source antigen.zsh
+#antigen bundle loiccoyle/zsh-github-copilot
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -119,3 +135,6 @@ source $ZSH/oh-my-zsh.sh
 ___MY_VMOPTIONS_SHELL_FILE="${HOME}/.jetbrains.vmoptions.sh"; if [ -f "${___MY_VMOPTIONS_SHELL_FILE}" ]; then . "${___MY_VMOPTIONS_SHELL_FILE}"; fi
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+if [[ $- == *i* ]]; then
+    start_tmux
+fi
