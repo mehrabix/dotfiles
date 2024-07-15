@@ -17,6 +17,8 @@ if command -v tmux >/dev/null 2>&1; then
 fi
 alias nano='nvim'
 alias vi='nvim'
+#export GTK_THEME=Catppuccin-Dark
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
