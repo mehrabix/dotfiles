@@ -1,0 +1,29 @@
+include rose-pine.conf
+
+
+# BEGIN_KITTY_THEME
+# Catppuccin-Mocha
+include current-theme.conf
+# END_KITTY_THEME
+
+
+scrollback_pager_history_size 10000
+
+# Set a default window opacity
+background_opacity 0.95
+font_family DroidSansMNerdFont-Regular
+
+# Enable ligatures
+enable_ligatures true
+
+# Set cursor style
+cursor_style beam
+
+# Set padding
+padding_width 5
+
+# Enable scroll wheel for scrolling
+mouse_wheel_scroll_size 3.0
+
+# Start Kitty in full-screen mode
+startup_mode fullscreen

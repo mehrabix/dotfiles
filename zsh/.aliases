@@ -1,0 +1,102 @@
+# pacman
+alias cleanup='sudo pacman -Rns $(pacman -Qtdq)'
+alias cleanpacman='sudo pacman -Scc'
+alias cleanyay='sudo yay -Scc'
+alias cleancache='rm -rf ~/.cache/*'
+alias cls="clear && printf '\e[3J'"
+alias fixpacman="sudo rm /var/lib/pacman/db.lck"
+
+# Get the error messages from journalctl
+alias jctl="journalctl -p 3 -xb"
+
+# Recent installed packages
+alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
+
+# reload
+alias reload='exec zsh | clear'
+
+# omz
+alias zshconfig="geany ~/.zshrc"
+alias ohmyzsh="thunar ~/.oh-my-zsh"
+
+# fzf
+alias nvimfzf="fzf --preview 'bat -n --theme=Dracula --tabs 2 --style=numbers --color=always {}' | xargs -n 1 nvim"
+
+# ls
+alias ls='exa -alhT --tree --level=1 --long --color=always --icons --no-user --git'
+# alias ls='exa -al --color=always --group-directories-first --icons' # preferred listing
+alias la='exa -a --color=always --group-directories-first --icons'  # all files and dirs
+alias ll='exa -l --color=always --group-directories-first --icons'  # long format
+alias lt='exa -aT --color=always --group-directories-first --icons' # tree listing
+alias l.='exa -ald --color=always --group-directories-first --icons .*' # show only dotfiles
+alias lm='ls -m'
+alias lr='ls -R'
+alias lg='ls -l --group-directories-first'
+
+alias bat='bat -n --theme=Dracula --tabs 2'
+alias cat='bat --style header --style snip --style changes --style header'
+
+# cp and mv
+alias mv='mv -v'
+alias cp='cp -vr'
+
+# rm
+alias rm='rm -vr'
+alias rmf='rm -f'
+alias rmi='rm -i'
+alias rmfi='rm -fi'
+
+# sudo
+alias please='sudo !!'
+
+# Common use
+alias grubup="sudo update-grub"
+alias tarnow='tar -acf '
+alias untar='tar -zxvf '
+alias wget='wget -c '
+alias rmpkg="sudo pacman -Rdd"
+alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+alias dir='dir --color=auto'
+alias vdir='vdir --color=auto'
+alias grep='ugrep --color=auto'
+alias fgrep='ugrep -F --color=auto'
+alias egrep='ugrep -E --color=auto'
+alias hw='hwinfo --short'                          # Hardware Info
+alias big="expac -H M '%m\t%n' | sort -h | nl"     # Sort installed packages according to size in MB (expac must be installed)
+alias gitpkg='pacman -Q | grep -i "\-git" | wc -l' # List amount of -git packages
+alias ip='ip -color'
+
+# git
+alias gcl='git clone --depth 1'
+alias gi='git init'
+alias ga='git add'
+alias gc='git commit -m'
+alias gp='git push origin master'
+
+# Get fastest mirrors
+alias mirror="sudo reflector -f 30 -l 30 --number 10 --verbose --save /etc/pacman.d/mirrorlist"
+alias mirrord="sudo reflector --latest 50 --number 20 --sort delay --save /etc/pacman.d/mirrorlist"
+alias mirrors="sudo reflector --latest 50 --number 20 --sort score --save /etc/pacman.d/mirrorlist"
+alias mirrora="sudo reflector --latest 50 --number 20 --sort age --save /etc/pacman.d/mirrorlist"
+
+# matrix
+alias matrix='rusty-rain -C 0,139,139 -s -c jap'
+
+# typers
+alias tt='ttyper'
+alias ff='fasttyper -n'
+
+# frogmouth
+alias reader='frogmouth'
+
+# grep alias
+alias aliasrch='alias | grep '
+
+# neofetch
+alias pf='neofetch'
