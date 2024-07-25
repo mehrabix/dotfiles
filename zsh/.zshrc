@@ -4,6 +4,9 @@ export PATH="$PATH:/opt/nvim-linux64/bin"
 export http_proxy="http://127.0.0.1:2081"
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
+
 #alias tmux='unset TMUX; tmux'
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
