@@ -262,6 +262,8 @@ vim.opt.rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
+
+  
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
 	-- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -489,7 +491,33 @@ require("lazy").setup({
 					},
 				},
 			})
-
+			require("bufferline").setup {
+				options = {
+				  numbers = "none",
+				  close_command = "bdelete! %d",
+				  right_mouse_command = "bdelete! %d",
+				  left_mouse_command = "buffer %d",
+				  middle_mouse_command = nil,
+				  indicator_icon = '▎',
+				  buffer_close_icon = '',
+				  modified_icon = '✥',
+				  close_icon = '',
+				  name_formatter = function(buf)  -- buf contains a "name" and "path"
+					return buf.name .. " (" .. buf.path .. ")"
+				  end,
+				  max_prefix_length = 15,  -- prefix used when a buffer is de-duplicated
+				  tab_size = 18,
+				  diagnostics = "nvim_lsp",
+				  offsets = {
+					{
+					  filetype = "NvimTree",  -- Show bufferline alongside NvimTree
+					  text = "File Explorer",
+					  text_align = "center",
+					  separator = true,
+					}
+				  },
+				}
+			  }
 			require("nvim-tree").setup({
 				sort = {
 					sorter = "case_sensitive",
@@ -523,6 +551,11 @@ require("lazy").setup({
 
 			-- Keymap for toggling nvim-tree
 			vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+
+			vim.api.nvim_set_keymap('n', '<C-z>', 'u', { noremap = true, silent = true })
+
+			vim.api.nvim_set_keymap('i', '<C-z>', '<C-o>u', { noremap = true, silent = true })
+
 
 			-- Keymap for focusing nvim-tree
 			vim.api.nvim_set_keymap("n", "<leader>e", ":NvimTreeFindFile<CR>", { noremap = true, silent = true })
