@@ -176,9 +176,14 @@ vim.opt.scrolloff = 10
 -- Enable tmux navigator
 vim.g.tmux_navigator_no_mappings = 1
 
+vim.cmd [[
+  autocmd BufWritePre <buffer> lua vim.lsp.buf.execute_command({ command = "java.organizeImports" })
+]]
+
 -- Custom key mappings for navigation
 local opts = { noremap = true }
 
+vim.api.nvim_set_keymap('n', '<leader>ca', ':lua vim.lsp.buf.code_action()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-h>', ':TmuxNavigateLeft<CR>', opts)
 vim.api.nvim_set_keymap('n', '<C-j>', ':TmuxNavigateDown<CR>', opts)
 vim.api.nvim_set_keymap('n', '<C-k>', ':TmuxNavigateUp<CR>', opts)
@@ -188,7 +193,8 @@ vim.api.nvim_set_keymap('i', '<C-h>', '<C-o>:TmuxNavigateLeft<CR>', opts)
 vim.api.nvim_set_keymap('i', '<C-j>', '<C-o>:TmuxNavigateDown<CR>', opts)
 vim.api.nvim_set_keymap('i', '<C-k>', '<C-o>:TmuxNavigateUp<CR>', opts)
 vim.api.nvim_set_keymap('i', '<C-l>', '<C-o>:TmuxNavigateRight<CR>', opts)
-
+vim.api.nvim_set_keymap('n', '<leader>oi', ':lua vim.lsp.buf.execute_command({ command = "java.organizeImports" })<CR>',
+	{ noremap = true, silent = true })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -302,7 +308,7 @@ require("lazy").setup({
 	-- after the plugin has been loaded:
 	--  config = function() ... end
 
-	{ -- Useful plugin to show you pending keybinds.
+	{                 -- Useful plugin to show you pending keybinds.
 		"folke/which-key.nvim",
 		event = "VimEnter", -- Sets the loading event to 'VimEnter'
 		opts = {
@@ -345,7 +351,7 @@ require("lazy").setup({
 
 			-- Document existing key chains
 			spec = {
-				{ "<leader>c", group = "[C]ode", mode = { "n", "x" } },
+				{ "<leader>c", group = "[C]ode",     mode = { "n", "x" } },
 				{ "<leader>d", group = "[D]ocument" },
 				{ "<leader>r", group = "[R]ename" },
 				{ "<leader>s", group = "[S]earch" },
@@ -385,7 +391,7 @@ require("lazy").setup({
 			{ "nvim-telescope/telescope-ui-select.nvim" },
 
 			-- Useful for getting pretty icons, but requires a Nerd Font.
-			{ "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
+			{ "nvim-tree/nvim-web-devicons",            enabled = vim.g.have_nerd_font },
 		},
 		config = function()
 			-- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -626,7 +632,7 @@ require("lazy").setup({
 			},
 		},
 	},
-	{ "Bilal2453/luvit-meta", lazy = true },
+	{ "Bilal2453/luvit-meta",         lazy = true },
 	{ "blazkowolf/gruber-darker.nvim" },
 	{
 		-- Main LSP Configuration
@@ -639,7 +645,7 @@ require("lazy").setup({
 
 			-- Useful status updates for LSP.
 			-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-			{ "j-hui/fidget.nvim", opts = {} },
+			{ "j-hui/fidget.nvim",       opts = {} },
 
 			-- Allows extra capabilities provided by nvim-cmp
 			"hrsh7th/cmp-nvim-lsp",
@@ -832,6 +838,32 @@ require("lazy").setup({
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
+			require('lspconfig').jdtls.setup({
+				cmd = { 'path/to/jdtls' },
+				root_dir = require('lspconfig').util.root_pattern('.git', 'pom.xml', 'build.gradle'),
+				settings = {
+					java = {
+						import = {
+							all = true, -- Automatically import all classes
+							static = true, -- Optionally, auto-import static classes
+						},
+						codeGeneration = {
+							useBlocks = true, -- Generate code blocks similar to IntelliJ
+						},
+						contentProvider = {
+							preferred = 'fernflower', -- Use a specific decompiler for bytecode
+						},
+					},
+				},
+				on_attach = function(client, bufnr)
+					vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>oi',
+						':lua vim.lsp.buf.execute_command({ command = "java.organizeImports" })<CR>',
+						{ noremap = true, silent = true })
+				end,
+			})
+
+
+
 			require("mason-lspconfig").setup({
 				handlers = {
 					function(server_name)
@@ -857,10 +889,10 @@ require("lazy").setup({
 			"TmuxNavigatePrevious",
 		},
 		keys = {
-			{ "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
-			{ "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
-			{ "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
-			{ "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
+			{ "<c-h>",  "<cmd><C-U>TmuxNavigateLeft<cr>" },
+			{ "<c-j>",  "<cmd><C-U>TmuxNavigateDown<cr>" },
+			{ "<c-k>",  "<cmd><C-U>TmuxNavigateUp<cr>" },
+			{ "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
 			{ "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
 		},
 	},
@@ -952,63 +984,36 @@ require("lazy").setup({
 			cmp.setup({
 				snippet = {
 					expand = function(args)
-						luasnip.lsp_expand(args.body)
+						require('luasnip').lsp_expand(args.body) -- Expand snippets
 					end,
 				},
 				completion = { completeopt = "menu,menuone,noinsert" },
 
-				-- For an understanding of why these mappings were
-				-- chosen, you will need to read `:help ins-completion`
-				--
-				-- No, but seriously. Please read `:help ins-completion`, it is really good!
-				mapping = cmp.mapping.preset.insert({
-					-- Select the [n]ext item
-					["<C-n>"] = cmp.mapping.select_next_item(),
-					-- Select the [p]revious item
-					["<C-p>"] = cmp.mapping.select_prev_item(),
+				mapping = {
+					["<C-n>"] = cmp.mapping.select_next_item(), -- Select the next item
+					["<C-p>"] = cmp.mapping.select_prev_item(), -- Select the previous item
+					["<C-b>"] = cmp.mapping.scroll_docs(-4), -- Scroll documentation up
+					["<C-f>"] = cmp.mapping.scroll_docs(4), -- Scroll documentation down
+					["<C-Space>"] = cmp.mapping.complete({}), -- Trigger completion
+					-- Accept completion with Enter (similar to VSCode)
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
 
-					-- Scroll the documentation window [b]ack / [f]orward
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
-
-					-- Accept ([y]es) the completion.
-					--  This will auto-import if your LSP supports it.
-					--  This will expand snippets if the LSP sent a snippet.
-					["<C-y>"] = cmp.mapping.confirm({ select = true }),
-
-					-- If you prefer more traditional completion keymaps,
-					-- you can uncomment the following lines
-					--['<CR>'] = cmp.mapping.confirm { select = true },
-					--['<Tab>'] = cmp.mapping.select_next_item(),
-					--['<S-Tab>'] = cmp.mapping.select_prev_item(),
-
-					-- Manually trigger a completion from nvim-cmp.
-					--  Generally you don't need this, because nvim-cmp will display
-					--  completions whenever it has completion options available.
-					["<C-Space>"] = cmp.mapping.complete({}),
-
-					-- Think of <c-l> as moving to the right of your snippet expansion.
-					--  So if you have a snippet that's like:
-					--  function $name($args)
-					--    $body
-					--  end
-					--
-					-- <c-l> will move you to the right of each of the expansion locations.
-					-- <c-h> is similar, except moving you backwards.
+					-- Snippet navigation
 					["<C-l>"] = cmp.mapping(function()
-						if luasnip.expand_or_locally_jumpable() then
-							luasnip.expand_or_jump()
+						if require('luasnip').expand_or_locally_jumpable() then
+							require('luasnip').expand_or_jump()
 						end
 					end, { "i", "s" }),
 					["<C-h>"] = cmp.mapping(function()
-						if luasnip.locally_jumpable(-1) then
-							luasnip.jump(-1)
+						if require('luasnip').locally_jumpable(-1) then
+							require('luasnip').jump(-1)
 						end
 					end, { "i", "s" }),
 
-					-- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-				}),
+					-- Optional: Uncomment for more traditional completion keymaps
+					-- ["<Tab>"] = cmp.mapping.select_next_item(),
+					-- ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+				},
 				sources = {
 					{
 						name = "lazydev",
