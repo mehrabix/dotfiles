@@ -173,6 +173,23 @@ vim.opt.scrolloff = 10
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+-- Enable tmux navigator
+vim.g.tmux_navigator_no_mappings = 1
+
+-- Custom key mappings for navigation
+local opts = { noremap = true }
+
+vim.api.nvim_set_keymap('n', '<C-h>', ':TmuxNavigateLeft<CR>', opts)
+vim.api.nvim_set_keymap('n', '<C-j>', ':TmuxNavigateDown<CR>', opts)
+vim.api.nvim_set_keymap('n', '<C-k>', ':TmuxNavigateUp<CR>', opts)
+vim.api.nvim_set_keymap('n', '<C-l>', ':TmuxNavigateRight<CR>', opts)
+
+vim.api.nvim_set_keymap('i', '<C-h>', '<C-o>:TmuxNavigateLeft<CR>', opts)
+vim.api.nvim_set_keymap('i', '<C-j>', '<C-o>:TmuxNavigateDown<CR>', opts)
+vim.api.nvim_set_keymap('i', '<C-k>', '<C-o>:TmuxNavigateUp<CR>', opts)
+vim.api.nvim_set_keymap('i', '<C-l>', '<C-o>:TmuxNavigateRight<CR>', opts)
+
+
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
@@ -830,7 +847,6 @@ require("lazy").setup({
 		end,
 	},
 	{ "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
-
 	{
 		"christoomey/vim-tmux-navigator",
 		cmd = {
