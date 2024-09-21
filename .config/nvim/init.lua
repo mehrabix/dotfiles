@@ -95,6 +95,13 @@ vim.cmd([[
   highlight NonText guibg=NONE ctermbg=NONE
 ]])
 
+-- Set the indentation settings
+vim.opt.tabstop = 4        -- Number of spaces a tab counts for
+vim.opt.softtabstop = 4     -- Number of spaces for a tab when editing
+vim.opt.shiftwidth = 4      -- Number of spaces for indentation
+vim.opt.expandtab = true    -- Use spaces instead of tabs
+
+
 vim.api.nvim_create_augroup("transparency", { clear = true })
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = "transparency",
@@ -176,25 +183,29 @@ vim.opt.scrolloff = 10
 -- Enable tmux navigator
 vim.g.tmux_navigator_no_mappings = 1
 
-vim.cmd [[
+vim.cmd([[
   autocmd BufWritePre <buffer> lua vim.lsp.buf.execute_command({ command = "java.organizeImports" })
-]]
+]])
 
 -- Custom key mappings for navigation
 local opts = { noremap = true }
 
-vim.api.nvim_set_keymap('n', '<leader>ca', ':lua vim.lsp.buf.code_action()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-h>', ':TmuxNavigateLeft<CR>', opts)
-vim.api.nvim_set_keymap('n', '<C-j>', ':TmuxNavigateDown<CR>', opts)
-vim.api.nvim_set_keymap('n', '<C-k>', ':TmuxNavigateUp<CR>', opts)
-vim.api.nvim_set_keymap('n', '<C-l>', ':TmuxNavigateRight<CR>', opts)
+vim.api.nvim_set_keymap("n", "<leader>ca", ":lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<C-h>", ":TmuxNavigateLeft<CR>", opts)
+vim.api.nvim_set_keymap("n", "<C-j>", ":TmuxNavigateDown<CR>", opts)
+vim.api.nvim_set_keymap("n", "<C-k>", ":TmuxNavigateUp<CR>", opts)
+vim.api.nvim_set_keymap("n", "<C-l>", ":TmuxNavigateRight<CR>", opts)
 
-vim.api.nvim_set_keymap('i', '<C-h>', '<C-o>:TmuxNavigateLeft<CR>', opts)
-vim.api.nvim_set_keymap('i', '<C-j>', '<C-o>:TmuxNavigateDown<CR>', opts)
-vim.api.nvim_set_keymap('i', '<C-k>', '<C-o>:TmuxNavigateUp<CR>', opts)
-vim.api.nvim_set_keymap('i', '<C-l>', '<C-o>:TmuxNavigateRight<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>oi', ':lua vim.lsp.buf.execute_command({ command = "java.organizeImports" })<CR>',
-	{ noremap = true, silent = true })
+vim.api.nvim_set_keymap("i", "<C-h>", "<C-o>:TmuxNavigateLeft<CR>", opts)
+vim.api.nvim_set_keymap("i", "<C-j>", "<C-o>:TmuxNavigateDown<CR>", opts)
+vim.api.nvim_set_keymap("i", "<C-k>", "<C-o>:TmuxNavigateUp<CR>", opts)
+vim.api.nvim_set_keymap("i", "<C-l>", "<C-o>:TmuxNavigateRight<CR>", opts)
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>oi",
+	':lua vim.lsp.buf.execute_command({ command = "java.organizeImports" })<CR>',
+	{ noremap = true, silent = true }
+)
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -263,7 +274,6 @@ vim.opt.rtp:prepend(lazypath)
 --    :Lazy update
 --
 
-  
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
 	-- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -491,33 +501,33 @@ require("lazy").setup({
 					},
 				},
 			})
-			require("bufferline").setup {
+			require("bufferline").setup({
 				options = {
-				  numbers = "none",
-				  close_command = "bdelete! %d",
-				  right_mouse_command = "bdelete! %d",
-				  left_mouse_command = "buffer %d",
-				  middle_mouse_command = nil,
-				  indicator_icon = '▎',
-				  buffer_close_icon = '',
-				  modified_icon = '✥',
-				  close_icon = '',
-				  name_formatter = function(buf)  -- buf contains a "name" and "path"
-					return buf.name .. " (" .. buf.path .. ")"
-				  end,
-				  max_prefix_length = 15,  -- prefix used when a buffer is de-duplicated
-				  tab_size = 18,
-				  diagnostics = "nvim_lsp",
-				  offsets = {
-					{
-					  filetype = "NvimTree",  -- Show bufferline alongside NvimTree
-					  text = "File Explorer",
-					  text_align = "center",
-					  separator = true,
-					}
-				  },
-				}
-			  }
+					numbers = "none",
+					close_command = "bdelete! %d",
+					right_mouse_command = "bdelete! %d",
+					left_mouse_command = "buffer %d",
+					middle_mouse_command = nil,
+					indicator_icon = "▎",
+					buffer_close_icon = "",
+					modified_icon = "✥",
+					close_icon = "",
+					name_formatter = function(buf) -- buf contains a "name" and "path"
+						return buf.name .. " (" .. buf.path .. ")"
+					end,
+					max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
+					tab_size = 18,
+					diagnostics = "nvim_lsp",
+					offsets = {
+						{
+							filetype = "NvimTree", -- Show bufferline alongside NvimTree
+							text = "File Explorer",
+							text_align = "center",
+							separator = true,
+						},
+					},
+				},
+			})
 			require("nvim-tree").setup({
 				sort = {
 					sorter = "case_sensitive",
@@ -536,7 +546,7 @@ require("lazy").setup({
 			pcall(require("telescope").load_extension, "fzf")
 			pcall(require("telescope").load_extension, "ui-select")
 
-			vim.opt.mouse = 'a'
+			vim.opt.mouse = "a"
 			-- See `:help telescope.builtin`
 			local builtin = require("telescope.builtin")
 			vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
@@ -553,10 +563,9 @@ require("lazy").setup({
 			-- Keymap for toggling nvim-tree
 			vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 
-			vim.api.nvim_set_keymap('n', '<C-z>', 'u', { noremap = true, silent = true })
+			vim.api.nvim_set_keymap("n", "<C-z>", "u", { noremap = true, silent = true })
 
-			vim.api.nvim_set_keymap('i', '<C-z>', '<C-o>u', { noremap = true, silent = true })
-
+			vim.api.nvim_set_keymap("i", "<C-z>", "<C-o>u", { noremap = true, silent = true })
 
 			-- Keymap for focusing nvim-tree
 			vim.api.nvim_set_keymap("n", "<leader>e", ":NvimTreeFindFile<CR>", { noremap = true, silent = true })
@@ -602,6 +611,29 @@ require("lazy").setup({
 				},
 			})
 		end,
+	},
+	{
+		"windwp/nvim-ts-autotag",
+		config = function()
+			require("nvim-ts-autotag").setup()
+		end,
+		event = "InsertEnter",
+		dependencies = "nvim-treesitter",
+	},
+	{
+		"L3MON4D3/LuaSnip",
+		version = "1.*",
+		build = "make install_jsregexp",
+		config = function()
+			require("luasnip.loaders.from_vscode").lazy_load()
+		end,
+	},
+
+	-- Snippet collections
+	{
+		"rafamadriz/friendly-snippets", -- Has snippets for many languages, including HTML, CSS, JS, React, and Angular
+		dependencies = { "L3MON4D3/LuaSnip" },
+		event = "InsertEnter",
 	},
 
 	{
@@ -685,6 +717,12 @@ require("lazy").setup({
 			"hrsh7th/cmp-nvim-lsp",
 		},
 		config = function()
+			require('lspconfig').ts_ls.setup({
+				on_attach = function(client, bufnr)
+				  -- Enable completion triggered by <c-x><c-o>
+				  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+				end,
+			  })
 			-- Brief aside: **What is LSP?**
 			--
 			-- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -872,9 +910,9 @@ require("lazy").setup({
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-			require('lspconfig').jdtls.setup({
-				cmd = { 'path/to/jdtls' },
-				root_dir = require('lspconfig').util.root_pattern('.git', 'pom.xml', 'build.gradle'),
+			require("lspconfig").jdtls.setup({
+				cmd = { "path/to/jdtls" },
+				root_dir = require("lspconfig").util.root_pattern(".git", "pom.xml", "build.gradle"),
 				settings = {
 					java = {
 						import = {
@@ -885,18 +923,20 @@ require("lazy").setup({
 							useBlocks = true, -- Generate code blocks similar to IntelliJ
 						},
 						contentProvider = {
-							preferred = 'fernflower', -- Use a specific decompiler for bytecode
+							preferred = "fernflower", -- Use a specific decompiler for bytecode
 						},
 					},
 				},
 				on_attach = function(client, bufnr)
-					vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>oi',
+					vim.api.nvim_buf_set_keymap(
+						bufnr,
+						"n",
+						"<leader>oi",
 						':lua vim.lsp.buf.execute_command({ command = "java.organizeImports" })<CR>',
-						{ noremap = true, silent = true })
+						{ noremap = true, silent = true }
+					)
 				end,
 			})
-
-
 
 			require("mason-lspconfig").setup({
 				handlers = {
@@ -993,12 +1033,12 @@ require("lazy").setup({
 					-- `friendly-snippets` contains a variety of premade snippets.
 					--    See the README about individual language/framework/plugin snippets:
 					--    https://github.com/rafamadriz/friendly-snippets
-					-- {
-					--   'rafamadriz/friendly-snippets',
-					--   config = function()
-					--     require('luasnip.loaders.from_vscode').lazy_load()
-					--   end,
-					-- },
+					{
+					  'rafamadriz/friendly-snippets',
+					  config = function()
+					    require('luasnip.loaders.from_vscode').lazy_load()
+					  end,
+					},
 				},
 			},
 			"saadparwaiz1/cmp_luasnip",
@@ -1018,7 +1058,7 @@ require("lazy").setup({
 			cmp.setup({
 				snippet = {
 					expand = function(args)
-						require('luasnip').lsp_expand(args.body) -- Expand snippets
+						require("luasnip").lsp_expand(args.body) -- Expand snippets
 					end,
 				},
 				completion = { completeopt = "menu,menuone,noinsert" },
@@ -1034,13 +1074,13 @@ require("lazy").setup({
 
 					-- Snippet navigation
 					["<C-l>"] = cmp.mapping(function()
-						if require('luasnip').expand_or_locally_jumpable() then
-							require('luasnip').expand_or_jump()
+						if require("luasnip").expand_or_locally_jumpable() then
+							require("luasnip").expand_or_jump()
 						end
 					end, { "i", "s" }),
 					["<C-h>"] = cmp.mapping(function()
-						if require('luasnip').locally_jumpable(-1) then
-							require('luasnip').jump(-1)
+						if require("luasnip").locally_jumpable(-1) then
+							require("luasnip").jump(-1)
 						end
 					end, { "i", "s" }),
 
@@ -1054,10 +1094,12 @@ require("lazy").setup({
 						-- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
 						group_index = 0,
 					},
+					{ name = 'buffer' },
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
 					{ name = "path" },
 				},
+				
 			})
 		end,
 	},
@@ -1170,7 +1212,10 @@ require("lazy").setup({
 			-- Prefer git instead of curl in order to improve connectivity in some environments
 			require("nvim-treesitter.install").prefer_git = true
 			---@diagnostic disable-next-line: missing-fields
-			require("nvim-treesitter.configs").setup(opts)
+			require'nvim-treesitter.configs'.setup {
+				ensure_installed = { "javascript", "typescript", "html", "css", "json","java" }, -- Ensure the languages are installed
+				highlight = { enable = true },
+			  }
 			require("nvim-ts-autotag").setup({
 				opts = {
 					-- Defaults
