@@ -24,6 +24,7 @@ plugins=(
 # Set your default editor and VISUAL variable
 export VISUAL=nvim
 export EDITOR="$VISUAL"
+export PATH="$HOME/.pnpm/bin:$PATH"
 
 # Enable case-insensitive completion
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
