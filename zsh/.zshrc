@@ -40,7 +40,6 @@ source $ZSH/oh-my-zsh.sh
 
 # Enable Powerlevel10k (if using this theme)
 # The following line is optional if you are using a custom theme
-source ~/.powerlevel10k/powerlevel10k.zsh-theme  # If manually installed
 
 # Enable zsh-autosuggestions for autocompletion
 source $ZSH/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -85,3 +84,5 @@ export TERM="xterm-256color"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
