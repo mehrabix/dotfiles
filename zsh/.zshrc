@@ -87,3 +87,11 @@ export TERM="xterm-256color"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
+
+# Add padding by adding spaces in the prompt
+PROMPT='
+       %F{green}%n@%m%f
+       %F{blue}%~%f
+       %# 
+'
+
