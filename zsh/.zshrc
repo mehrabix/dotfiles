@@ -18,6 +18,7 @@ plugins=(
   command-not-found         # Suggestions for unrecognized commands
   npm                       # NPM commands for Node.js integration
   history-substring-search  # History search enhancements
+  fzf                        # Fuzzy finder integration
 )
 
 # Source Oh My Zsh
@@ -38,6 +39,7 @@ alias gs="git status"
 alias gp="git push"
 alias ..="cd .."
 alias zshconfig="nvim ~/.zshrc"  # Quick access to .zshrc file
+alias rg="rg --hidden --glob '!*.git/'"
 
 # History and search settings
 bindkey '^R' history-incremental-search-backward
@@ -92,3 +94,7 @@ export TERM="xterm-256color"
 #
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 export PATH="/home/linuxbrew/.linuxbrew/sbin:$PATH"
+
+alias rg="rg --hidden --glob '.zshrc.git/'"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
