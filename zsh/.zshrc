@@ -98,3 +98,4 @@ export PATH="/home/linuxbrew/.linuxbrew/sbin:$PATH"
 alias rg="rg --hidden --glob '.zshrc.git/'"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export PATH="$(npm config get prefix)/bin:$PATH"
