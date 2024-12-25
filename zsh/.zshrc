@@ -99,3 +99,6 @@ alias rg="rg --hidden --glob '.zshrc.git/'"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export PATH="$(npm config get prefix)/bin:$PATH"
+
+. "$HOME/.cargo/env"
+
