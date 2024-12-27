@@ -372,6 +372,28 @@ require("lazy").setup({
 			},
 		},
 	},
+  {
+    "github/copilot.vim",
+    config = function()
+      vim.g.copilot_no_tab_map = true
+
+      -- Remap Tab to accept Copilot suggestions if available
+      vim.api.nvim_set_keymap(
+        "i", -- Insert mode
+        "<Tab>",
+        'copilot#Accept("")',
+        { expr = true, silent = true, noremap = true }
+      )
+
+      -- Optional: Map Shift+Tab to dismiss suggestions
+      vim.api.nvim_set_keymap(
+        "i",
+        "<S-Tab>",
+        'copilot#Dismiss()',
+        { expr = true, silent = true, noremap = true }
+      )
+    end,
+  },
 
 	-- NOTE: Plugins can specify dependencies.
 	--
@@ -528,8 +550,8 @@ require("lazy").setup({
 				},
 			})
 			require("nvim-tree").setup({
-				sort = {
-					sorter = "case_sensitive",
+				filters = {
+					dotfiles = true,
 				},
 				view = {
 					width = 30,
@@ -537,9 +559,7 @@ require("lazy").setup({
 				renderer = {
 					group_empty = true,
 				},
-				filters = {
-					dotfiles = true,
-				},
+				sort_by = "case_sensitive",
 			})
 			-- Enable Telescope extensions if they are installed
 			pcall(require("telescope").load_extension, "fzf")
