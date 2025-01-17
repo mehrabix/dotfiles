@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/home/aenima/.zsh/completions:"* ]]; then export FPATH="/home/aenima/.zsh/completions:$FPATH"; fi
 # Path to your Oh My Zsh installation
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -102,3 +104,8 @@ export PATH="$(npm config get prefix)/bin:$PATH"
 
 . "$HOME/.cargo/env"
 
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+. "/home/aenima/.deno/env"
