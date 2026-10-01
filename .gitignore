@@ -1,0 +1,23 @@
+# Oh My Zsh and its plugins are third-party and are installed by install.sh.
+.oh-my-zsh/
+zsh/.oh-my-zsh/
+
+# Generated zsh files.
+*.zwc
+.zcompdump*
+
+# Editor / OS noise.
+*.swp
+*~
+.DS_Store
+
+# Never commit secrets.
+.ssh/
+.gnupg/
+.aws/
+.kube/
+.ansible/
+.netrc
+.env
+*.pem
+*.key
