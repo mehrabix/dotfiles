@@ -3,13 +3,6 @@
 # Keep this file minimal. Every line here should do something you actually use.
 
 # ─────────────────────────────────────────────────────────────
-# Powerlevel10k instant prompt (must stay at the very top)
-# ─────────────────────────────────────────────────────────────
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# ─────────────────────────────────────────────────────────────
 # Oh My Zsh
 # ─────────────────────────────────────────────────────────────
 export ZSH="$HOME/.oh-my-zsh"
@@ -18,7 +11,10 @@ export ZSH="$HOME/.oh-my-zsh"
 # so skip the noisy completion security check.
 ZSH_DISABLE_COMPFIX="true"
 
-ZSH_THEME="powerlevel10k/powerlevel10k"
+# robbyrussell: the classic Oh My Zsh arrow prompt, matching macOS Terminal
+# (➜  dir git:(branch)). Switch back to powerlevel10k/powerlevel10k and
+# re-add the ~/.p10k.zsh source line below to restore the old prompt.
+ZSH_THEME="robbyrussell"
 # git: branch/status in the prompt. z: cd with tab completion.
 # history-substring-search: type part of an old command, press Up to find it.
 plugins=(git z history-substring-search)
@@ -184,8 +180,3 @@ t() {
     echo "Already inside tmux."
   fi
 }
-
-# ─────────────────────────────────────────────────────────────
-# Powerlevel10k config
-# ─────────────────────────────────────────────────────────────
-[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh

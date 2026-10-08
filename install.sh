@@ -10,7 +10,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(zsh nvim tmux bash git)
+PACKAGES=(zsh nvim tmux bash git ptyxis)
 OMZ_DIR="$HOME/.oh-my-zsh"
 OMZ_CUSTOM="$OMZ_DIR/custom"
 
@@ -74,6 +74,29 @@ cd "$DOTFILES_DIR"
 mkdir -p "$HOME/.config"
 if ! stow --target="$HOME" --restow "${PACKAGES[@]}"; then
   die "stow hit a conflict. Move the offending file aside and re-run."
+fi
+
+# --- 5. Terminal (Ptyxis) ----------------------------------------------------
+# The palette lives in the stow package; these settings live in dconf, so they
+# cannot be symlinked and must be applied with gsettings.
+if command -v ptyxis >/dev/null 2>&1; then
+  info "Configuring Ptyxis (macOS-style dark theme)..."
+  gsettings set org.gnome.Ptyxis interface-style 'dark' 2>/dev/null || true
+  gsettings set org.gnome.Ptyxis use-system-font false 2>/dev/null || true
+  gsettings set org.gnome.Ptyxis font-name 'SF Mono 12' 2>/dev/null || true
+
+  profile_uuid="$(gsettings get org.gnome.Ptyxis default-profile-uuid 2>/dev/null | tr -d "'")" || true
+  if [[ -n "${profile_uuid:-}" ]]; then
+    gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${profile_uuid}/" \
+      palette 'macOS Pro' 2>/dev/null || true
+  fi
+
+  if ! fc-list 2>/dev/null | grep -qi 'SF Mono'; then
+    warn "SF Mono is not installed; the terminal will fall back to another font."
+    warn "See the README for how to install it."
+  fi
+else
+  warn "Ptyxis not installed; skipping the terminal theme."
 fi
 
 info "Done. Open a new shell to pick everything up."

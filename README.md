@@ -6,10 +6,11 @@ My Linux (Ubuntu) dotfiles, managed with [GNU Stow](https://www.gnu.org/software
 
 | Package | Links into `$HOME` | Description |
 | ------- | ------------------ | ----------- |
-| `zsh`   | `.zshrc`, `.p10k.zsh` | Zsh + [Powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt (lean, one-line, devops flavored) |
+| `zsh`   | `.zshrc`, `.p10k.zsh` | Zsh + Oh My Zsh with the `robbyrussell` (macOS-style) arrow prompt |
 | `bash`  | `.bashrc`, `.profile` | Bash fallback shell |
 | `git`   | `.gitconfig` | Git config (credentials via `gh`) |
 | `tmux`  | `.tmux.conf` | Tmux configuration |
+| `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS-style terminal palette (`macOS Pro`) for the [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) terminal |
 | `nvim`  | `.config/nvim` | Neovim (LazyVim) configuration |
 
 `~/dotfiles/install.sh` also installs Oh My Zsh and the custom plugins/theme the
@@ -31,8 +32,13 @@ The installer is idempotent — re-run it any time to relink after changes.
   `apt`/`dnf`/`pacman`/`brew`).
 - [fzf](https://github.com/junegunn/fzf) for the `fzf-tab` completion picker
   (optional; the plugin stays disabled without it).
+- [SF Mono](https://developer.apple.com/fonts/) for the macOS-style terminal
+  font (the Ptyxis profile uses *SF Mono 12*). The installer only *warns* if it
+  is missing — drop the `.otf` files into `~/.local/share/fonts/` and run
+  `fc-cache -f`. Any Menlo-like monospace font works if you change the
+  `font-name` in `install.sh`.
 - A [Nerd Font](https://www.nerdfonts.com/) in your terminal for the prompt and
-  icons.
+  icons. Only needed if you switch back to the Powerlevel10k prompt.
 
 ## How it works
 
