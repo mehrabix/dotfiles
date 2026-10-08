@@ -88,7 +88,7 @@ if command -v ptyxis >/dev/null 2>&1; then
   profile_uuid="$(gsettings get org.gnome.Ptyxis default-profile-uuid 2>/dev/null | tr -d "'")" || true
   if [[ -n "${profile_uuid:-}" ]]; then
     gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${profile_uuid}/" \
-      palette 'macOS Pro' 2>/dev/null || true
+      palette 'macOS' 2>/dev/null || true
   fi
 
   if ! fc-list 2>/dev/null | grep -qi 'SF Mono'; then

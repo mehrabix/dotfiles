@@ -10,7 +10,7 @@ My Linux (Ubuntu) dotfiles, managed with [GNU Stow](https://www.gnu.org/software
 | `bash`  | `.bashrc`, `.profile` | Bash fallback shell |
 | `git`   | `.gitconfig` | Git config (credentials via `gh`) |
 | `tmux`  | `.tmux.conf` | Tmux configuration |
-| `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS-style terminal palette (`macOS Pro`) for the [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) terminal |
+| `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS-style terminal palette (`macOS`) for the [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) terminal |
 | `nvim`  | `.config/nvim` | Neovim (LazyVim) configuration |
 
 `~/dotfiles/install.sh` also installs Oh My Zsh and the custom plugins/theme the

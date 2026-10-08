@@ -1,13 +1,13 @@
 [Palette]
-Name=macOS Pro
-Background=#000000
-Foreground=#F2F2F2
-Cursor=#F2F2F2
+Name=macOS
+Background=#222425
+Foreground=#C5C7C9
+Cursor=#C5C7C9
 Color0=#000000
 Color1=#990000
 Color2=#00A600
 Color3=#999900
-Color4=#2009DB
+Color4=#0000B2
 Color5=#B200B2
 Color6=#00A6B2
 Color7=#BFBFBF
