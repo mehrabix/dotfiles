@@ -9,9 +9,9 @@ My Linux (Ubuntu) dotfiles, managed with [GNU Stow](https://www.gnu.org/software
 | `zsh`   | `.zshrc`, `.p10k.zsh` | Zsh + Oh My Zsh with the `robbyrussell` (macOS-style) arrow prompt |
 | `bash`  | `.bashrc`, `.profile` | Bash fallback shell |
 | `git`   | `.gitconfig` | Git config (credentials via `gh`) |
-| `tmux`  | `.tmux.conf` | Tmux configuration |
+| `tmux`  | `.tmux.conf`, `.local/bin/tmux-sessionizer` | Tmux configuration (prefix `C-a`, vim-style pane switching, sessionizer) |
 | `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS-style terminal palette (`macOS`) for the [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) terminal |
-| `nvim`  | `.config/nvim` | Neovim (LazyVim) configuration |
+| `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) |
 
 `~/dotfiles/install.sh` also installs Oh My Zsh and the custom plugins/theme the
 zsh config depends on. Those live in `~/.oh-my-zsh` and are **not** versioned
@@ -39,6 +39,10 @@ The installer is idempotent — re-run it any time to relink after changes.
   `font-name` in `install.sh`.
 - A [Nerd Font](https://www.nerdfonts.com/) in your terminal for the prompt and
   icons. Only needed if you switch back to the Powerlevel10k prompt.
+- For Neovim: `ripgrep` (`rg`) for Telescope's live grep, and `node`/`npm` for
+  the Mason-installed language servers. The first launch installs all plugins
+  (lazy.nvim), Treesitter parsers and Mason tools, so it needs a network
+  connection and takes a few minutes.
 
 ## How it works
 

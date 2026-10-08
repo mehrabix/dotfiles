@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# tmux-sessionizer — fuzzy-find a directory, then open or switch to a tmux
+# session for it. Adapted from ThePrimeagen's version.
+#
+#   tmux-sessionizer              fuzzy-pick from your project directories
+#   tmux-sessionizer ~/some/dir   jump straight to that directory
+#
+set -euo pipefail
+
+if [[ $# -eq 1 ]]; then
+  selected=$1
+else
+  search_dirs=(
+    "$HOME"
+    "$HOME/k8s-lab"
+    "$HOME/devops"
+    "$HOME/command-code"
+    "$HOME/Documents"
+    "$HOME/go/src"
+  )
+  selected=$(find "${search_dirs[@]}" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | fzf)
+fi
+
+[[ -z ${selected:-} ]] && exit 0
+
+selected_name=$(basename "$selected" | tr . _)
+
+if [[ -z ${TMUX:-} ]] && ! pgrep -x tmux >/dev/null; then
+  tmux new-session -s "$selected_name" -c "$selected"
+  exit 0
+fi
+
+if ! tmux has-session -t="$selected_name" 2>/dev/null; then
+  tmux new-session -ds "$selected_name" -c "$selected"
+fi
+
+tmux switch-client -t "$selected_name"

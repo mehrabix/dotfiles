@@ -99,4 +99,17 @@ else
   warn "Ptyxis not installed; skipping the terminal theme."
 fi
 
+# --- 6. Editor prerequisites -------------------------------------------------
+# The first `nvim` launch installs lazy.nvim plugins, Treesitter parsers and
+# Mason tools; that needs a network connection and these tools on PATH. Missing
+# ones only warn -- the editor still opens.
+missing=()
+for tool in git fzf rg node npm make; do
+  command -v "$tool" >/dev/null 2>&1 || missing+=("$tool")
+done
+if ((${#missing[@]})); then
+  warn "Missing tools used by Neovim: ${missing[*]}"
+  warn "ripgrep (rg) powers Telescope's grep; node/npm power Mason's installs."
+fi
+
 info "Done. Open a new shell to pick everything up."
