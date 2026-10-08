@@ -108,6 +108,19 @@ alias ping='ping -c 5'
 alias fd='fdfind'
 
 # ─────────────────────────────────────────────────────────────
+# Colors (macOS terminal palette)
+# ─────────────────────────────────────────────────────────────
+# GNU ls colors, using the same palette as the terminal/prompt.
+export LS_COLORS='di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.zip=01;31:*.gz=01;31:*.bz2=01;31:*.xz=01;31:*.zst=01;31:*.7z=01;31:*.rar=01;31:*.deb=01;31:*.rpm=01;31:*.png=01;35:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.svg=01;35:*.pdf=01;35:*.mp3=01;35:*.mp4=01;35:*.mkv=01;35:*.yaml=00;33:*.yml=00;33:*.json=00;33:*.toml=00;33:*.tf=00;33:*.tfvars=00;33:*.lua=00;33:*.sh=01;32:*.zsh=01;32'
+
+# grep: match in bold red, filename magenta, line number green, separator cyan.
+export GREP_COLORS='ms=01;31:mc=01;31:sl=:cx=:fn=01;35:ln=01;32:bn=01;32:se=01;36'
+
+# fzf (used directly and by fzf-tab).
+export FZF_DEFAULT_OPTS="--layout=reverse --border=rounded --info=inline \
+--color=fg:#E5E5E5,bg:#222425,hl:#00D900,fg+:#E5E5E5,bg+:#303233,hl+:#00D900,info:#C5C7C9,prompt:#00E5E5,pointer:#E500E5,marker:#E5E500,spinner:#00E5E5,header:#859EB3"
+
+# ─────────────────────────────────────────────────────────────
 # Options
 # ─────────────────────────────────────────────────────────────
 setopt AUTO_CD INTERACTIVE_COMMENTS NO_CASE_GLOB EXTENDED_GLOB

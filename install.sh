@@ -10,7 +10,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(zsh nvim tmux bash git ptyxis)
+PACKAGES=(zsh nvim tmux bash git ptyxis k9s)
 OMZ_DIR="$HOME/.oh-my-zsh"
 OMZ_CUSTOM="$OMZ_DIR/custom"
 

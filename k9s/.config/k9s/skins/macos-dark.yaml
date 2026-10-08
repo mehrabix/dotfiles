@@ -1,0 +1,86 @@
+# macos-dark — k9s skin using the macOS Terminal palette
+# (background #222425, foreground #E5E5E5, classic ANSI accents).
+k9s:
+  body:
+    fgColor: "#E5E5E5"
+    bgColor: "#222425"
+    logoColor: "#E50000"
+  prompt:
+    fgColor: "#E5E5E5"
+    bgColor: "#222425"
+    suggestColor: "#00E5E5"
+  info:
+    fgColor: "#C5C7C9"
+    sectionColor: "#00D900"
+  dialog:
+    fgColor: "#E5E5E5"
+    bgColor: "#222425"
+    buttonFgColor: "#E5E5E5"
+    buttonBgColor: "#0000FF"
+    buttonFocusFgColor: "#222425"
+    buttonFocusBgColor: "#00E5E5"
+    labelFgColor: "#E5E500"
+    fieldFgColor: "#E5E5E5"
+  frame:
+    border:
+      fgColor: "#666666"
+      focusColor: "#00D900"
+    menu:
+      fgColor: "#E5E5E5"
+      keyColor: "#00E5E5"
+      numKeyColor: "#E500E5"
+    crumbs:
+      fgColor: "#E5E5E5"
+      bgColor: "#222425"
+      activeColor: "#00D900"
+    status:
+      newColor: "#00E5E5"
+      modifyColor: "#E5E500"
+      addColor: "#00D900"
+      errorColor: "#E50000"
+      highlightcolor: "#B200B2"
+      killColor: "#E50000"
+      completedColor: "#666666"
+  views:
+    charts:
+      bgColor: "#222425"
+      defaultDialColors:
+        - "#0000FF"
+        - "#E50000"
+      defaultChartColors:
+        - "#0000FF"
+        - "#E50000"
+    table:
+      fgColor: "#E5E5E5"
+      bgColor: "#222425"
+      cursorFgColor: "#222425"
+      cursorBgColor: "#E5E500"
+      markColor: "#E5E500"
+      header:
+        fgColor: "#C5C7C9"
+        bgColor: "#222425"
+        sorterColor: "#00E5C5"
+    xray:
+      fgColor: "#E5E5E5"
+      bgColor: "#222425"
+      cursorColor: "#E5E500"
+      graphicColor: "#B200B2"
+      showIcons: false
+    yaml:
+      keyColor: "#00E5E5"
+      colonColor: "#C5C7C9"
+      valueColor: "#E5E5E5"
+    logs:
+      fgColor: "#E5E5E5"
+      bgColor: "#222425"
+      indicator:
+        fgColor: "#E5E5E5"
+        bgColor: "#0000FF"
+        toggleOnColor: "#00D900"
+        toggleOffColor: "#666666"
+    help:
+      fgColor: "#E5E5E5"
+      bgColor: "#222425"
+      sectionColor: "#0000FF"
+      keyColor: "#E5E5E5"
+      numKeyColor: "#00D900"

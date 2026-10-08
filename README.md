@@ -12,6 +12,7 @@ My Linux (Ubuntu) dotfiles, managed with [GNU Stow](https://www.gnu.org/software
 | `tmux`  | `.tmux.conf`, `.local/bin/tmux-sessionizer` | Tmux configuration (prefix `C-a`, vim-style pane switching, sessionizer) |
 | `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS-style terminal palette (`macOS`) for the [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) terminal |
 | `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) |
+| `k9s`   | `.config/k9s` | [k9s](https://k9scli.io/) config with a `macos-dark` skin matching the terminal palette |
 
 `~/dotfiles/install.sh` also installs Oh My Zsh and the custom plugins/theme the
 zsh config depends on. Those live in `~/.oh-my-zsh` and are **not** versioned
