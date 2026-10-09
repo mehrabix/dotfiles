@@ -28,7 +28,5 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 
-vim.opt.colorcolumn = "80"
-
 -- Neovim will not create the undo directory for you.
 vim.fn.mkdir(vim.fn.expand(vim.opt.undodir:get()[1]), "p")
