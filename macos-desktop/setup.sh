@@ -105,7 +105,7 @@ install_look() {
   fi
 
   local wp
-  wp="$(find wallpapers/4k -iname "$WALLPAPER" | head -1 || true)"
+  wp="$(find wallpapers/4k -iname "$WALLPAPER" | head -1)"
   if [[ -n "$wp" ]]; then
     cp -f "$wp" "$WALL_DIR/$WALLPAPER"
     gsettings set org.gnome.desktop.background picture-options 'zoom'
@@ -137,16 +137,8 @@ install_fonts() {
 }
 
 # ── 4. GNOME extensions ────────────────────────────────────────
-# Installed vs enabled: user-theme is left installed but OFF. The WhiteSur
-# shell theme predates GNOME 50 and its panel/notification styling breaks, so
-# the native (Yaru) shell theme is used instead.
 EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
-  "blur-my-shell@aunetx"
-  "dash-to-dock@micxgx.gmail.com"
-  "just-perfection-desktop@just-perfection"
-)
-ENABLED_EXTENSIONS=(
   "blur-my-shell@aunetx"
   "dash-to-dock@micxgx.gmail.com"
   "just-perfection-desktop@just-perfection"
@@ -194,13 +186,15 @@ apply() {
   gsettings set "$WMP" button-layout ':minimize,maximize,close'
   gsettings set org.gnome.desktop.interface enable-animations true
 
-  # Keep the built-in dock switched off: Dash to Dock replaces it. user-theme
-  # is not enabled, so the shell keeps its native theme.
+  # Keep the built-in dock switched off: Dash to Dock replaces it.
   gsettings set org.gnome.shell enabled-extensions \
-    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}']"
+    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${EXTENSIONS[0]}', '${EXTENSIONS[1]}', '${EXTENSIONS[2]}', '${EXTENSIONS[3]}']"
 
   # Extension schemas are not on the default search path.
-  local G="$EXT_DIR/dash-to-dock@micxgx.gmail.com/schemas"
+  local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
+  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.user-theme name "$GTK_THEME" || true
+
+  G="$EXT_DIR/dash-to-dock@micxgx.gmail.com/schemas"
   for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 48" "show-apps-at-top true"; do
     GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.dash-to-dock ${kv} || true
   done
@@ -215,7 +209,7 @@ apply() {
     GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.$c blur true || true
   done
 
-  info "Done. Log out and back in for the extensions to load."
+  info "Done. Log out and back in for the shell theme and extensions."
 }
 
 # ── 6. GDM login screen (sudo) ─────────────────────────────────

@@ -32,15 +32,11 @@ The installer is idempotent — re-run it any time to relink after changes.
 
 ## macOS-style desktop
 
-`macos-desktop/setup.sh` themes the GNOME desktop like macOS: the WhiteSur GTK
-theme, icon theme and cursors, SF Pro from Apple, the Blur my Shell / Dash to
-Dock / Just Perfection extensions, a Sonoma wallpaper, and the matching
-gsettings (dark blue accent, window buttons on the right, bottom dock, blur,
-clock on the right, slower animations).
-
-The WhiteSur *shell* theme is deliberately **not** used: it predates GNOME 50
-and its panel / notification / menu styling breaks, so those keep the native
-theme. User Themes is installed but left disabled.
+`macos-desktop/setup.sh` themes the whole GNOME desktop like macOS: the WhiteSur
+GTK theme, icon theme and cursors, SF Pro from Apple, the User Themes / Blur my
+Shell / Dash to Dock / Just Perfection extensions, a Sonoma wallpaper, and the
+matching gsettings (dark blue accent, window buttons on the right, bottom dock,
+blur, clock on the right, slower animations).
 
 ```sh
 ~/.dotfiles/macos-desktop/setup.sh              # user-level only
