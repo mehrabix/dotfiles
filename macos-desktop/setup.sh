@@ -15,9 +15,10 @@ set -euo pipefail
 
 # ── Config ─────────────────────────────────────────────────────
 ACCENT="${ACCENT:-blue}"
-GTK_THEME="WhiteSur-Dark-${ACCENT}"
+GTK_THEME="WhiteSur-Dark-solid-${ACCENT}"   # solid variant (no transparency)
+SHELL_THEME="WhiteSur-Dark-${ACCENT}"
 ICON_THEME="WhiteSur-dark"
-CURSOR_THEME="WhiteSur Cursors"
+CURSOR_THEME="WhiteSur-cursors"
 WALLPAPER="Sonoma-dark.jpg"
 
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/macos-desktop"
@@ -195,13 +196,13 @@ apply() {
   gsettings set "$WMP" button-layout ':minimize,maximize,close'
   gsettings set org.gnome.desktop.interface enable-animations true
 
-  # Keep the built-in dock switched off: Dash to Dock replaces it.
+  # Ubuntu's own dock stays enabled alongside Dash to Dock.
   gsettings set org.gnome.shell enabled-extensions \
-    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}', '${ENABLED_EXTENSIONS[3]}']"
+    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}', '${ENABLED_EXTENSIONS[3]}', 'ubuntu-dock@ubuntu.com']"
 
   # Extension schemas are not on the default search path.
   local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
-  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.user-theme name "$GTK_THEME" || true
+  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.user-theme name "$SHELL_THEME" || true
 
   G="$EXT_DIR/dash-to-dock@micxgx.gmail.com/schemas"
   for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 48" "show-apps-at-top true"; do
