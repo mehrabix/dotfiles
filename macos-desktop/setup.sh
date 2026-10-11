@@ -167,12 +167,27 @@ install_extensions() {
   done
 }
 
+# GNOME 50 renamed/added a few shell containers that WhiteSur does not style,
+# so they lose their rounded corners. Append an override to the theme.
+apply_shell_overrides() {
+  local css="$THEMES/$GTK_THEME/gnome-shell/gnome-shell.css"
+  local ov="$REPO_DIR/macos-desktop/shell-overrides.css"
+  [[ -f "$css" && -f "$ov" ]] || return 0
+  if grep -q 'WhiteSur predates GNOME 50' "$css"; then
+    info "Shell theme overrides already applied."
+    return
+  fi
+  info "Appending GNOME 50 shell overrides..."
+  { printf '\n'; cat "$ov"; } >> "$css"
+}
+
 # ── 5. Apply settings ──────────────────────────────────────────
 apply() {
   local IFACE=org.gnome.desktop.interface
   local WMP=org.gnome.desktop.wm.preferences
 
   info "Applying the macOS look..."
+  apply_shell_overrides
   gsettings set "$IFACE" gtk-theme "$GTK_THEME"
   gsettings set "$IFACE" icon-theme "$ICON_THEME"
   gsettings set "$IFACE" cursor-theme "$CURSOR_THEME"
@@ -203,6 +218,7 @@ apply() {
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection activities-button true || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection clock-menu-position 1 || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection animation 2 || true
+  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection panel-corner-size 12 || true
 
   G="$EXT_DIR/blur-my-shell@aunetx/schemas"
   for c in panel dash-to-dock overview appfolder; do
