@@ -78,17 +78,23 @@ fi
 
 # --- 5. Terminal (Ptyxis) ----------------------------------------------------
 # The palette lives in the stow package; these settings live in dconf, so they
-# cannot be symlinked and must be applied with gsettings.
+# cannot be symlinked and must be applied with gsettings. Values mirror macOS
+# Terminal: login shell, bold-is-bright, block cursor.
 if command -v ptyxis >/dev/null 2>&1; then
-  info "Configuring Ptyxis (macOS-style dark theme)..."
+  info "Configuring Ptyxis (macOS-style dark terminal)..."
   gsettings set org.gnome.Ptyxis interface-style 'dark' 2>/dev/null || true
   gsettings set org.gnome.Ptyxis use-system-font false 2>/dev/null || true
   gsettings set org.gnome.Ptyxis font-name 'SF Mono 12' 2>/dev/null || true
+  gsettings set org.gnome.Ptyxis cursor-shape 'block' 2>/dev/null || true
+  gsettings set org.gnome.Ptyxis cursor-blink-mode 'system' 2>/dev/null || true
+  gsettings set org.gnome.Ptyxis disable-padding false 2>/dev/null || true
 
   profile_uuid="$(gsettings get org.gnome.Ptyxis default-profile-uuid 2>/dev/null | tr -d "'")" || true
   if [[ -n "${profile_uuid:-}" ]]; then
-    gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${profile_uuid}/" \
-      palette 'macOS' 2>/dev/null || true
+    profile="org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${profile_uuid}/"
+    gsettings set "$profile" palette 'macOS' 2>/dev/null || true
+    gsettings set "$profile" login-shell true 2>/dev/null || true
+    gsettings set "$profile" bold-is-bright true 2>/dev/null || true
   fi
 
   if ! fc-list 2>/dev/null | grep -qi 'SF Mono'; then
@@ -110,6 +116,14 @@ done
 if ((${#missing[@]})); then
   warn "Missing tools used by Neovim: ${missing[*]}"
   warn "ripgrep (rg) powers Telescope's grep; node/npm power Mason's installs."
+fi
+
+# --- 7. macOS-style desktop (optional) ---------------------------------------
+# Themes, icons, cursors, SF Pro, GNOME extensions and the shell theme live
+# outside ~ (or in dconf), so they get their own script. Reversible and
+# idempotent; `--with-sudo` also does the apt deps and the GDM login screen.
+if [[ -x "$DOTFILES_DIR/macos-desktop/setup.sh" ]]; then
+  info "macOS-style desktop: run '$DOTFILES_DIR/macos-desktop/setup.sh' (optional)."
 fi
 
 info "Done. Open a new shell to pick everything up."

@@ -10,9 +10,12 @@ My Linux (Ubuntu) dotfiles, managed with [GNU Stow](https://www.gnu.org/software
 | `bash`  | `.bashrc`, `.profile` | Bash fallback shell |
 | `git`   | `.gitconfig` | Git config (credentials via `gh`) |
 | `tmux`  | `.tmux.conf`, `.local/bin/tmux-sessionizer` | Tmux configuration (prefix `C-a`, vim-style pane switching, sessionizer) |
-| `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS-style terminal palette (`macOS`) for the [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) terminal |
+| `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS terminal palette (`macOS`); `install.sh` also sets login-shell, bold-is-bright, a block cursor and SF Mono |
 | `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) |
 | `k9s`   | `.config/k9s` | [k9s](https://k9scli.io/) config with a `macos-dark` skin matching the terminal palette |
+
+`macos-desktop/` is not a Stow package (nothing in it links into `$HOME`); it is
+the optional desktop theming script described below.
 
 `~/dotfiles/install.sh` also installs Oh My Zsh and the custom plugins/theme the
 zsh config depends on. Those live in `~/.oh-my-zsh` and are **not** versioned
@@ -26,6 +29,23 @@ git clone https://github.com/mehrabix/dotfiles.git ~/.dotfiles
 ```
 
 The installer is idempotent — re-run it any time to relink after changes.
+
+## macOS-style desktop
+
+`macos-desktop/setup.sh` themes the whole GNOME desktop like macOS: the WhiteSur
+GTK theme, icon theme and cursors, SF Pro from Apple, the User Themes / Blur my
+Shell / Dash to Dock / Just Perfection extensions, a Sonoma wallpaper, and the
+matching gsettings (dark blue accent, window buttons on the right, bottom dock,
+blur, clock on the right, slower animations).
+
+```sh
+~/.dotfiles/macos-desktop/setup.sh              # user-level only
+~/.dotfiles/macos-desktop/setup.sh --with-sudo  # + apt build deps + GDM login screen
+```
+
+It is idempotent and reversible, and needs `git`, `curl`, `unzip`, `7z`, `cpio`
+plus (for the theme build) `sassc` and `imagemagick`. Log out and back in for the
+shell theme and extensions — Wayland cannot restart GNOME Shell in place.
 
 ### Requirements
 
