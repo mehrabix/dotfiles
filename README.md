@@ -35,12 +35,12 @@ The installer is idempotent — re-run it any time to relink after changes.
 `macos-desktop/setup.sh` themes the GNOME desktop like macOS: the WhiteSur GTK
 theme, icon theme and cursors, SF Pro from Apple, the User Themes / Dash to Dock
 / Just Perfection extensions, a Sonoma wallpaper, and the matching gsettings
-(dark blue accent, window buttons on the right, bottom dock, clock on the right,
-slower animations).
+(dark blue accent, window buttons on the right, bottom dock, clock on the right).
 
-Blur my Shell blurs the panel, dash and overview only — its `popup` component is
-turned **off**, because on GNOME 50 it draws square corners over rounded popups
-([aunetx/blur-my-shell#900](https://github.com/aunetx/blur-my-shell/issues/900)).
+Blur my Shell blurs the **panel and dock only** — its `popup` component is turned
+off (on GNOME 50 it draws square corners over rounded popups,
+[aunetx/blur-my-shell#900](https://github.com/aunetx/blur-my-shell/issues/900)),
+and the overview/appfolder blur is skipped to stay light on the GPU.
 
 ```sh
 ~/.dotfiles/macos-desktop/setup.sh              # user-level only

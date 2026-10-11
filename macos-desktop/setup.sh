@@ -211,14 +211,16 @@ apply() {
   G="$EXT_DIR/just-perfection-desktop@just-perfection/schemas"
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection activities-button true || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection clock-menu-position 1 || true
-  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection animation 2 || true
 
-  # Blur the panel/dash/overview, but not the popups (see ENABLED_EXTENSIONS).
+  # Blur only the panel and dock — enough for the look, lighter on the GPU —
+  # and never the popups (see ENABLED_EXTENSIONS).
   G="$EXT_DIR/blur-my-shell@aunetx/schemas"
-  for c in panel dash-to-dock overview appfolder; do
+  for c in panel dash-to-dock; do
     GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.$c blur true || true
   done
-  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.popup blur false || true
+  for c in popup overview appfolder; do
+    GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.$c blur false || true
+  done
 
   info "Done. Log out and back in for the shell theme and extensions."
 }
