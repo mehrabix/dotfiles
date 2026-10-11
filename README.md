@@ -33,9 +33,10 @@ The installer is idempotent — re-run it any time to relink after changes.
 ## macOS-style desktop
 
 `macos-desktop/setup.sh` themes the GNOME desktop like macOS: the WhiteSur GTK
-theme, icon theme and cursors, SF Pro from Apple, the User Themes / Dash to Dock
-/ Just Perfection extensions, a Sonoma wallpaper, and the matching gsettings
-(dark blue accent, window buttons on the right, bottom dock, clock on the right).
+theme (dark, solid blue), icon theme and cursors, SF Pro from Apple, the User
+Themes / Blur my Shell / Dash to Dock / Just Perfection extensions, a Sonoma
+wallpaper, and the matching gsettings (dark blue accent, window buttons on the
+right, bottom dock, clock on the right).
 
 Blur my Shell blurs the **panel and dock only** — its `popup` component is turned
 off (on GNOME 50 it draws square corners over rounded popups,
