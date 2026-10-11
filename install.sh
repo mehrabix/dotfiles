@@ -120,7 +120,16 @@ if ((${#missing[@]})); then
   warn "ripgrep (rg) powers Telescope's grep; node/npm power Mason's installs."
 fi
 
-# --- 7. macOS-style desktop (optional) ---------------------------------------
+# --- 7. Startup tweaks -------------------------------------------------------
+# Ubuntu's crash notifier costs ~5s of session startup and we don't need it.
+# Reversible with `systemctl --user unmask <unit>`.
+for unit in update-notifier-crash.service update-notifier-crash.path; do
+  if systemctl --user list-unit-files "$unit" >/dev/null 2>&1; then
+    systemctl --user mask "$unit" >/dev/null 2>&1 || true
+  fi
+done
+
+# --- 8. macOS-style desktop (optional) ---------------------------------------
 # Themes, icons, cursors, SF Pro, GNOME extensions and the shell theme live
 # outside ~ (or in dconf), so they get their own script. Reversible and
 # idempotent; `--with-sudo` also does the apt deps and the GDM login screen.

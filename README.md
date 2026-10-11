@@ -70,6 +70,12 @@ shell theme and extensions — Wayland cannot restart GNOME Shell in place.
   (lazy.nvim), Treesitter parsers and Mason tools, so it needs a network
   connection and takes a few minutes.
 
+## Startup tweaks
+
+`install.sh` masks Ubuntu's crash notifier
+(`update-notifier-crash.{service,path}`), which otherwise costs about 5s of
+session startup. Undo with `systemctl --user unmask update-notifier-crash.{service,path}`.
+
 ## How it works
 
 Each top-level directory is a Stow package whose tree mirrors `$HOME`:
