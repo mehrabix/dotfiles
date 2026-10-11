@@ -137,8 +137,16 @@ install_fonts() {
 }
 
 # ── 4. GNOME extensions ────────────────────────────────────────
+# Installed vs enabled: user-theme is left installed but OFF. The WhiteSur
+# shell theme predates GNOME 50 and its panel/notification styling breaks, so
+# the native (Yaru) shell theme is used instead.
 EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
+  "blur-my-shell@aunetx"
+  "dash-to-dock@micxgx.gmail.com"
+  "just-perfection-desktop@just-perfection"
+)
+ENABLED_EXTENSIONS=(
   "blur-my-shell@aunetx"
   "dash-to-dock@micxgx.gmail.com"
   "just-perfection-desktop@just-perfection"
@@ -167,27 +175,12 @@ install_extensions() {
   done
 }
 
-# GNOME 50 renamed/added a few shell containers that WhiteSur does not style,
-# so they lose their rounded corners. Append an override to the theme.
-apply_shell_overrides() {
-  local css="$THEMES/$GTK_THEME/gnome-shell/gnome-shell.css"
-  local ov="$REPO_DIR/macos-desktop/shell-overrides.css"
-  [[ -f "$css" && -f "$ov" ]] || return 0
-  if grep -q 'WhiteSur predates GNOME 50' "$css"; then
-    info "Shell theme overrides already applied."
-    return
-  fi
-  info "Appending GNOME 50 shell overrides..."
-  { printf '\n'; cat "$ov"; } >> "$css"
-}
-
 # ── 5. Apply settings ──────────────────────────────────────────
 apply() {
   local IFACE=org.gnome.desktop.interface
   local WMP=org.gnome.desktop.wm.preferences
 
   info "Applying the macOS look..."
-  apply_shell_overrides
   gsettings set "$IFACE" gtk-theme "$GTK_THEME"
   gsettings set "$IFACE" icon-theme "$ICON_THEME"
   gsettings set "$IFACE" cursor-theme "$CURSOR_THEME"
@@ -201,15 +194,13 @@ apply() {
   gsettings set "$WMP" button-layout ':minimize,maximize,close'
   gsettings set org.gnome.desktop.interface enable-animations true
 
-  # Keep the built-in dock switched off: Dash to Dock replaces it.
+  # Keep the built-in dock switched off: Dash to Dock replaces it. user-theme
+  # is not enabled, so the shell keeps its native theme.
   gsettings set org.gnome.shell enabled-extensions \
-    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${EXTENSIONS[0]}', '${EXTENSIONS[1]}', '${EXTENSIONS[2]}', '${EXTENSIONS[3]}']"
+    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}']"
 
   # Extension schemas are not on the default search path.
-  local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
-  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.user-theme name "$GTK_THEME" || true
-
-  G="$EXT_DIR/dash-to-dock@micxgx.gmail.com/schemas"
+  local G="$EXT_DIR/dash-to-dock@micxgx.gmail.com/schemas"
   for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 48" "show-apps-at-top true"; do
     GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.dash-to-dock ${kv} || true
   done
@@ -218,14 +209,13 @@ apply() {
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection activities-button true || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection clock-menu-position 1 || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection animation 2 || true
-  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection panel-corner-size 12 || true
 
   G="$EXT_DIR/blur-my-shell@aunetx/schemas"
   for c in panel dash-to-dock overview appfolder; do
     GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.$c blur true || true
   done
 
-  info "Done. Log out and back in for the shell theme and extensions."
+  info "Done. Log out and back in for the extensions to load."
 }
 
 # ── 6. GDM login screen (sudo) ─────────────────────────────────
