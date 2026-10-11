@@ -143,12 +143,12 @@ EXTENSIONS=(
   "dash-to-dock@micxgx.gmail.com"
   "just-perfection-desktop@just-perfection"
 )
-# blur-my-shell is installed but left OFF: on GNOME 50 its `popup` component
-# overrides the notification / quick-settings backgrounds and renders their
-# rounded corners square. (Blur the panel/dash/overview only by setting
-# org.gnome.shell.extensions.blur-my-shell.popup blur to false.)
+# blur-my-shell stays enabled for the panel/dash/overview, but its `popup`
+# component is turned off: it draws square corners over rounded popups on
+# GNOME 50 (aunetx/blur-my-shell#900).
 ENABLED_EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
+  "blur-my-shell@aunetx"
   "dash-to-dock@micxgx.gmail.com"
   "just-perfection-desktop@just-perfection"
 )
@@ -197,7 +197,7 @@ apply() {
 
   # Keep the built-in dock switched off: Dash to Dock replaces it.
   gsettings set org.gnome.shell enabled-extensions \
-    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}']"
+    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}', '${ENABLED_EXTENSIONS[3]}']"
 
   # Extension schemas are not on the default search path.
   local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
@@ -212,6 +212,13 @@ apply() {
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection activities-button true || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection clock-menu-position 1 || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection animation 2 || true
+
+  # Blur the panel/dash/overview, but not the popups (see ENABLED_EXTENSIONS).
+  G="$EXT_DIR/blur-my-shell@aunetx/schemas"
+  for c in panel dash-to-dock overview appfolder; do
+    GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.$c blur true || true
+  done
+  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.popup blur false || true
 
   info "Done. Log out and back in for the shell theme and extensions."
 }

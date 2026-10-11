@@ -38,10 +38,9 @@ theme, icon theme and cursors, SF Pro from Apple, the User Themes / Dash to Dock
 (dark blue accent, window buttons on the right, bottom dock, clock on the right,
 slower animations).
 
-Blur my Shell is installed but left **disabled**: on GNOME 50 its `popup`
-component overrides the notification / quick-settings background and turns their
-rounded corners square. (To keep blur on just the panel/dash/overview, re-enable
-it and set `org.gnome.shell.extensions.blur-my-shell.popup blur` to `false`.)
+Blur my Shell blurs the panel, dash and overview only — its `popup` component is
+turned **off**, because on GNOME 50 it draws square corners over rounded popups
+([aunetx/blur-my-shell#900](https://github.com/aunetx/blur-my-shell/issues/900)).
 
 ```sh
 ~/.dotfiles/macos-desktop/setup.sh              # user-level only
