@@ -97,7 +97,9 @@ if command -v ptyxis >/dev/null 2>&1; then
     gsettings set "$profile" bold-is-bright true 2>/dev/null || true
   fi
 
-  if ! fc-list 2>/dev/null | grep -qi 'SF Mono'; then
+  # Note: no `grep -q` here — it exits early and, under `pipefail`, fc-list's
+  # SIGPIPE makes the pipeline look like a failure (false "not installed").
+  if ! fc-list 2>/dev/null | grep -i 'SF Mono' >/dev/null; then
     warn "SF Mono is not installed; the terminal will fall back to another font."
     warn "See the README for how to install it."
   fi

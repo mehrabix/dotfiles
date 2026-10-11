@@ -105,7 +105,7 @@ install_look() {
   fi
 
   local wp
-  wp="$(find wallpapers/4k -iname "$WALLPAPER" | head -1)"
+  wp="$(find wallpapers/4k -iname "$WALLPAPER" | head -1 || true)"
   if [[ -n "$wp" ]]; then
     cp -f "$wp" "$WALL_DIR/$WALLPAPER"
     gsettings set org.gnome.desktop.background picture-options 'zoom'
