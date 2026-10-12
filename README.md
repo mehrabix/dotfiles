@@ -34,17 +34,16 @@ The installer is idempotent — re-run it any time to relink after changes.
 
 `macos-desktop/setup.sh` themes the GNOME desktop like macOS: the WhiteSur GTK
 theme (dark, solid blue), icon theme and cursors, SF Pro from Apple, the User
-Themes / Blur my Shell / Dash to Dock / Just Perfection extensions, a Sonoma
-wallpaper, and the matching gsettings (dark blue accent, window buttons on the
-right, bottom dock, clock on the right).
+Themes / Dash to Dock / Just Perfection extensions, a Sonoma wallpaper, and the
+matching gsettings (dark blue accent, window buttons on the right, bottom dock,
+clock on the right).
 
-Blur my Shell blurs the **dock only**: the panel is left solid (matching the
-`solid` GTK variant and lighter on the GPU), and its `popup` component is turned
-off (on GNOME 50 it draws square corners over rounded popups,
-[aunetx/blur-my-shell#900](https://github.com/aunetx/blur-my-shell/issues/900)).
-The overview/appfolder blur is skipped too. Ubuntu's own dock is disabled —
-Dash to Dock already draws the dock, and running both duplicates the work on a
-weak GPU — and GNOME animations are turned off for a snappier feel.
+The dock is drawn by Dash to Dock and **rounded by the shell theme itself**
+(`border-radius` on `.dash-background`), with no blur extension: Blur my Shell's
+dash actor is built before the dock has an allocation, which left the dock
+visibly glitched for a few seconds after login. Ubuntu's own dock is disabled —
+Dash to Dock already draws it — and GNOME animations are turned off for a
+snappier feel.
 
 ```sh
 ~/.dotfiles/macos-desktop/setup.sh              # user-level only

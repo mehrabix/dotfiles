@@ -140,16 +140,16 @@ install_fonts() {
 # ── 4. GNOME extensions ────────────────────────────────────────
 EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
-  "blur-my-shell@aunetx"
   "dash-to-dock@micxgx.gmail.com"
   "just-perfection-desktop@just-perfection"
 )
-# blur-my-shell stays enabled for the dock, but its `popup` component is turned
-# off: it draws square corners over rounded popups on GNOME 50
-# (aunetx/blur-my-shell#900).
+# Blur my Shell is intentionally not used. Its dash background actor is built
+# before the dock has an allocation, which leaves the dock visibly glitched for
+# a few seconds on login (`bms-dash-* ... needs an allocation` in the journal).
+# The WhiteSur shell theme already rounds the dock, so we keep it plain and it
+# is correct from the first frame.
 ENABLED_EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
-  "blur-my-shell@aunetx"
   "dash-to-dock@micxgx.gmail.com"
   "just-perfection-desktop@just-perfection"
 )
@@ -200,7 +200,7 @@ apply() {
   # docks at once is duplicated work on a weak GPU. The snapd/web search
   # providers are dropped too; they only add Overview search noise.
   gsettings set org.gnome.shell enabled-extensions \
-    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}', '${ENABLED_EXTENSIONS[3]}']"
+    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}']"
 
   # Extension schemas are not on the default search path.
   local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
@@ -215,17 +215,9 @@ apply() {
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection activities-button true || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection clock-menu-position 1 || true
 
-  # Blur only the dock — the panel stays solid (matching the "solid" GTK variant
-  # and lighter on the GPU) and the popups are never blurred (see
-  # ENABLED_EXTENSIONS).
-  G="$EXT_DIR/blur-my-shell@aunetx/schemas"
-  for c in panel popup overview appfolder; do
-    GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.$c blur false || true
-  done
-  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock blur true || true
-  # The dock's rounded corners come from the rounded blur pipeline, which only
-  # applies while static blur is on: turning it off squares off the dock corners.
-  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock static-blur true || true
+  # The dock is drawn by Dash to Dock and rounded by the WhiteSur shell theme
+  # (border-radius on `.dash-background`), so no blur extension is needed and the
+  # dock is correct from the first frame at login.
 
   info "Done. Log out and back in for the shell theme and extensions."
 }
