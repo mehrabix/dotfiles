@@ -144,9 +144,9 @@ EXTENSIONS=(
   "dash-to-dock@micxgx.gmail.com"
   "just-perfection-desktop@just-perfection"
 )
-# blur-my-shell stays enabled for the panel/dash/overview, but its `popup`
-# component is turned off: it draws square corners over rounded popups on
-# GNOME 50 (aunetx/blur-my-shell#900).
+# blur-my-shell stays enabled for the dock, but its `popup` component is turned
+# off: it draws square corners over rounded popups on GNOME 50
+# (aunetx/blur-my-shell#900).
 ENABLED_EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
   "blur-my-shell@aunetx"
@@ -194,11 +194,13 @@ apply() {
   gsettings set "$WMP" titlebar-font 'SF Pro Display Bold 11'
   # Window buttons stay on the right by preference.
   gsettings set "$WMP" button-layout ':minimize,maximize,close'
-  gsettings set org.gnome.desktop.interface enable-animations true
+  gsettings set org.gnome.desktop.interface enable-animations false
 
-  # Ubuntu's own dock stays enabled alongside Dash to Dock.
+  # Ubuntu's own dock stays off: Dash to Dock already draws the dock, and two
+  # docks at once is duplicated work on a weak GPU. The snapd/web search
+  # providers are dropped too; they only add Overview search noise.
   gsettings set org.gnome.shell enabled-extensions \
-    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}', '${ENABLED_EXTENSIONS[3]}', 'ubuntu-dock@ubuntu.com']"
+    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}', '${ENABLED_EXTENSIONS[3]}']"
 
   # Extension schemas are not on the default search path.
   local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
@@ -213,15 +215,17 @@ apply() {
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection activities-button true || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection clock-menu-position 1 || true
 
-  # Blur only the panel and dock — enough for the look, lighter on the GPU —
-  # and never the popups (see ENABLED_EXTENSIONS).
+  # Blur only the dock — the panel stays solid (matching the "solid" GTK variant
+  # and lighter on the GPU) and the popups are never blurred (see
+  # ENABLED_EXTENSIONS).
   G="$EXT_DIR/blur-my-shell@aunetx/schemas"
-  for c in panel dash-to-dock; do
-    GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.$c blur true || true
-  done
-  for c in popup overview appfolder; do
+  for c in panel popup overview appfolder; do
     GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.$c blur false || true
   done
+  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock blur true || true
+  # The dock's rounded corners come from the rounded blur pipeline, which only
+  # applies while static blur is on: turning it off squares off the dock corners.
+  GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock static-blur true || true
 
   info "Done. Log out and back in for the shell theme and extensions."
 }
