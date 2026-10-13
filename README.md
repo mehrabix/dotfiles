@@ -44,6 +44,10 @@ visibly glitched for a few seconds after login. Ubuntu's own dock is disabled â€
 Dash to Dock already draws it â€” and GNOME animations are turned off for a
 snappier feel.
 
+Keyboard layouts switch with Alt+Shift on **either side and in either order**
+(bound through the shell's `switch-input-source`; `lv3:ralt_alt` keeps Right Alt
+a plain Alt so it can take part in the chord).
+
 ```sh
 ~/.dotfiles/macos-desktop/setup.sh              # user-level only
 ~/.dotfiles/macos-desktop/setup.sh --with-sudo  # + apt build deps + GDM login screen

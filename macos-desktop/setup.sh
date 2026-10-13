@@ -197,6 +197,15 @@ apply() {
   gsettings set "$WMP" button-layout ':minimize,maximize,close'
   gsettings set org.gnome.desktop.interface enable-animations false
 
+  # Switch keyboard layouts with Alt+Shift on either side and in either order.
+  # XKB's grp:alt_shift_toggle only pairs same-side keys and is order-sensitive
+  # (pressing Shift before Alt would not switch), so we bind the shell's
+  # switch-input-source instead. lv3:ralt_alt keeps Right Alt a plain Alt so it
+  # can take part in the chord rather than acting as AltGr.
+  gsettings set org.gnome.desktop.input-sources xkb-options "['lv3:ralt_alt']"
+  gsettings set org.gnome.desktop.wm.keybindings switch-input-source \
+    "['<Shift>Alt_L', '<Alt>Shift_L', '<Shift>Alt_R', '<Alt>Shift_R']"
+
   # Ubuntu's own dock stays off: Dash to Dock already draws the dock, and two
   # docks at once is duplicated work on a weak GPU. The snapd/web search
   # providers are dropped too; they only add Overview search noise.
