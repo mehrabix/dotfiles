@@ -9,7 +9,7 @@ My Linux (Ubuntu) dotfiles, managed with [GNU Stow](https://www.gnu.org/software
 | `zsh`   | `.zshrc`, `.p10k.zsh` | Zsh + Oh My Zsh with the `robbyrussell` (macOS-style) arrow prompt |
 | `bash`  | `.bashrc`, `.profile` | Bash fallback shell |
 | `git`   | `.gitconfig` | Git config (credentials via `gh`) |
-| `tmux`  | `.tmux.conf`, `.local/bin/tmux-sessionizer` | Tmux configuration (prefix `C-a`, vim-style pane switching, sessionizer) |
+| `tmux`  | `.tmux.conf`, `.local/bin/tmux-sessionizer` | Tmux configuration (prefix `C-b`, vim-style pane switching, sessionizer) |
 | `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS terminal palette (`macOS`); `install.sh` also sets login-shell, bold-is-bright, a block cursor and SF Mono |
 | `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) |
 
