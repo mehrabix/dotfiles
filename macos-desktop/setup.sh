@@ -195,7 +195,14 @@ apply() {
   gsettings set "$WMP" titlebar-font 'SF Pro Display Bold 11'
   # Window buttons stay on the right by preference.
   gsettings set "$WMP" button-layout ':minimize,maximize,close'
-  gsettings set org.gnome.desktop.interface enable-animations false
+  # Animations stay on for macOS-style smoothness. Panel/desktop touches: battery
+  # percentage, a clock with the weekday, a top-left hot corner for the Overview
+  # (Mission Control), and workspaces on every display.
+  gsettings set "$IFACE" enable-animations true
+  gsettings set "$IFACE" show-battery-percentage true
+  gsettings set "$IFACE" clock-show-weekday true
+  gsettings set "$IFACE" enable-hot-corners true
+  gsettings set org.gnome.mutter workspaces-only-on-primary false
 
   # Switch keyboard layouts with Alt+Shift on either side and in either order.
   # XKB's grp:alt_shift_toggle only pairs same-side keys and is order-sensitive
@@ -216,17 +223,26 @@ apply() {
   local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.user-theme name "$SHELL_THEME" || true
 
-  # Pin the dock to a specific display by connector name; here the external
-  # monitor, HDMI-1 (the laptop panel is eDP-1). `preferred-monitor -2` means
-  # "use the connector".
+  # Dock placement and behaviour. Pin it to a display by connector name (HDMI-1
+  # is the external monitor; the laptop panel is eDP-1) and make clicks behave
+  # like the macOS Dock: click minimizes, scroll switches windows, middle-click
+  # launches a new instance. `preferred-monitor -2` means "use the connector".
   G="$EXT_DIR/dash-to-dock@micxgx.gmail.com/schemas"
-  for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 48" "show-apps-at-top true" "preferred-monitor -2" "preferred-monitor-by-connector $DOCK_MONITOR"; do
+  for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 48" "show-apps-at-top true" "click-action minimize" "scroll-action switch-window" "middle-click-action launch" "preferred-monitor -2" "preferred-monitor-by-connector $DOCK_MONITOR"; do
     GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.dash-to-dock ${kv} || true
   done
 
   G="$EXT_DIR/just-perfection-desktop@just-perfection/schemas"
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection activities-button true || true
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.just-perfection clock-menu-position 1 || true
+
+  # Super+E opens the file manager, like Windows Explorer.
+  local MEDIA=org.gnome.settings-daemon.plugins.media-keys
+  local CK="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+  gsettings set "$MEDIA" custom-keybindings "['$CK']"
+  gsettings set "$MEDIA.custom-keybinding:$CK" name 'Files'
+  gsettings set "$MEDIA.custom-keybinding:$CK" command 'nautilus'
+  gsettings set "$MEDIA.custom-keybinding:$CK" binding '<Super>e'
 
   # The dock is drawn by Dash to Dock and rounded by the WhiteSur shell theme
   # (border-radius on `.dash-background`), so no blur extension is needed and the

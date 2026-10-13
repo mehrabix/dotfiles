@@ -129,6 +129,23 @@ for unit in update-notifier-crash.service update-notifier-crash.path; do
   fi
 done
 
+# Plymouth's splash keeps multi-user.target waiting ~7s on a machine without disk
+# encryption. Undo: sudo systemctl unmask plymouth-quit-wait.service
+sudo systemctl mask plymouth-quit-wait.service >/dev/null 2>&1 || true
+
+# Keep swap use low on an SSD. Undo: remove the file, then `sudo sysctl --system`.
+if [[ ! -e /etc/sysctl.d/99-swappiness.conf ]]; then
+  echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf >/dev/null
+fi
+sudo sysctl --system >/dev/null 2>&1 || true
+
+# Services this laptop does not use: printing, mobile broadband, dual-GPU
+# switching and crash dumps. Re-enable any with `sudo systemctl enable --now`.
+for unit in cups.service cups.socket cups-browsed.service ModemManager.service \
+            switcheroo-control.service kdump-tools.service; do
+  sudo systemctl disable --now "$unit" >/dev/null 2>&1 || true
+done
+
 # --- 8. macOS-style desktop (optional) ---------------------------------------
 # Themes, icons, cursors, SF Pro, GNOME extensions and the shell theme live
 # outside ~ (or in dconf), so they get their own script. Reversible and

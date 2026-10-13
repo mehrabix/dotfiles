@@ -41,12 +41,16 @@ The dock is drawn by Dash to Dock and **rounded by the shell theme itself**
 (`border-radius` on `.dash-background`), with no blur extension: Blur my Shell's
 dash actor is built before the dock has an allocation, which left the dock
 visibly glitched for a few seconds after login. Ubuntu's own dock is disabled —
-Dash to Dock already draws it — and GNOME animations are turned off for a
-snappier feel.
+Dash to Dock already draws it.
 
 Keyboard layouts switch with Alt+Shift on **either side and in either order**
 (bound through the shell's `switch-input-source`; `lv3:ralt_alt` keeps Right Alt
 a plain Alt so it can take part in the chord).
+
+Smaller familiarities: battery percentage and a weekday clock in the panel, a
+top-left hot corner for the Overview (Mission Control), workspaces on every
+display, macOS-style dock clicks (click minimizes, scroll switches windows,
+middle-click launches) and Super+E for the file manager.
 
 ```sh
 ~/.dotfiles/macos-desktop/setup.sh              # user-level only
@@ -80,6 +84,11 @@ shell theme and extensions — Wayland cannot restart GNOME Shell in place.
 `install.sh` masks Ubuntu's crash notifier
 (`update-notifier-crash.{service,path}`), which otherwise costs about 5s of
 session startup. Undo with `systemctl --user unmask update-notifier-crash.{service,path}`.
+
+It also skips Plymouth's boot splash (`plymouth-quit-wait.service`, ~7s on a
+machine without disk encryption), drops `vm.swappiness` to 10, and disables a
+few services this laptop does not use (printing, mobile broadband, dual-GPU
+switching, crash dumps). Each is reversible — see the comments in `install.sh`.
 
 ## How it works
 
