@@ -120,7 +120,7 @@ if ((${#missing[@]})); then
   warn "ripgrep (rg) powers Telescope's grep; node/npm power Mason's installs."
 fi
 
-# --- 7. Startup tweaks -------------------------------------------------------
+# --- 7. System tweaks --------------------------------------------------------
 # Ubuntu's crash notifier costs ~5s of session startup and we don't need it.
 # Reversible with `systemctl --user unmask <unit>`.
 for unit in update-notifier-crash.service update-notifier-crash.path; do
@@ -145,6 +145,13 @@ for unit in cups.service cups.socket cups-browsed.service ModemManager.service \
             switcheroo-control.service kdump-tools.service; do
   sudo systemctl disable --now "$unit" >/dev/null 2>&1 || true
 done
+
+# Ubuntu 26.04's sudo-rs echoes a `*` per keystroke by default; restore silent
+# password entry. Undo: sudo rm /etc/sudoers.d/0pwfeedback
+if [[ ! -e /etc/sudoers.d/0pwfeedback ]]; then
+  printf 'Defaults !pwfeedback\n' | sudo tee /etc/sudoers.d/0pwfeedback >/dev/null
+  sudo chmod 0440 /etc/sudoers.d/0pwfeedback
+fi
 
 # --- 8. macOS-style desktop (optional) ---------------------------------------
 # Themes, icons, cursors, SF Pro, GNOME extensions and the shell theme live

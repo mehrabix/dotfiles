@@ -79,16 +79,17 @@ shell theme and extensions — Wayland cannot restart GNOME Shell in place.
   (lazy.nvim), Treesitter parsers and Mason tools, so it needs a network
   connection and takes a few minutes.
 
-## Startup tweaks
+## System tweaks
 
 `install.sh` masks Ubuntu's crash notifier
 (`update-notifier-crash.{service,path}`), which otherwise costs about 5s of
 session startup. Undo with `systemctl --user unmask update-notifier-crash.{service,path}`.
 
 It also skips Plymouth's boot splash (`plymouth-quit-wait.service`, ~7s on a
-machine without disk encryption), drops `vm.swappiness` to 10, and disables a
-few services this laptop does not use (printing, mobile broadband, dual-GPU
-switching, crash dumps). Each is reversible — see the comments in `install.sh`.
+machine without disk encryption), drops `vm.swappiness` to 10, disables a few
+services this laptop does not use (printing, mobile broadband, dual-GPU
+switching, crash dumps), and turns off sudo-rs's `pwfeedback` so sudo asks for
+the password silently. Each is reversible — see the comments in `install.sh`.
 
 ## How it works
 
