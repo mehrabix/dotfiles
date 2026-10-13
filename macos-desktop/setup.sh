@@ -20,6 +20,7 @@ SHELL_THEME="WhiteSur-Dark-${ACCENT}"
 ICON_THEME="WhiteSur-dark"
 CURSOR_THEME="WhiteSur-cursors"
 WALLPAPER="Sonoma-dark.jpg"
+DOCK_MONITOR="${DOCK_MONITOR:-HDMI-1}"      # connector the dock is pinned to
 
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/macos-desktop"
 THEMES="$HOME/.themes"
@@ -206,8 +207,11 @@ apply() {
   local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.user-theme name "$SHELL_THEME" || true
 
+  # Pin the dock to a specific display by connector name; here the external
+  # monitor, HDMI-1 (the laptop panel is eDP-1). `preferred-monitor -2` means
+  # "use the connector".
   G="$EXT_DIR/dash-to-dock@micxgx.gmail.com/schemas"
-  for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 48" "show-apps-at-top true"; do
+  for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 48" "show-apps-at-top true" "preferred-monitor -2" "preferred-monitor-by-connector $DOCK_MONITOR"; do
     GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.dash-to-dock ${kv} || true
   done
 
