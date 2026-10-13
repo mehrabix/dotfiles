@@ -57,35 +57,3 @@ autocmd("LspAttach", {
 vim.g.netrw_browse_split = 0
 vim.g.netrw_banner = 0
 vim.g.netrw_winsize = 25
-
--- Neovim ships no Ansible filetype detection, so mark playbooks and role files
--- as `yaml.ansible` -- that is what ansiblels and ansible-lint attach to.
-autocmd({ "BufNewFile", "BufRead" }, {
-  group = augroup("user_ansible_ftdetect", { clear = true }),
-  pattern = { "*.yml", "*.yaml" },
-  callback = function(args)
-    local buf = args.buf
-
-    local function set_ansible()
-      vim.bo[buf].filetype = "yaml.ansible"
-    end
-
-    local path = args.file and vim.fn.fnamemodify(args.file, ":p") or ""
-    if
-      path:match("/roles/[^/]+/(tasks|handlers|defaults|vars|meta)/")
-      or path:match("/playbooks?/")
-      or path:match("/group_vars/")
-      or path:match("/host_vars/")
-    then
-      return set_ansible()
-    end
-
-    local ok, lines = pcall(vim.api.nvim_buf_get_lines, buf, 0, 40, false)
-    if ok then
-      local head = table.concat(lines, "\n")
-      if head:match("^%s*%-%s*hosts:") or head:match("\n%s*%-%s*hosts:") then
-        return set_ansible()
-      end
-    end
-  end,
-})

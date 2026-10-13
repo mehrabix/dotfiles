@@ -15,8 +15,6 @@ zsh/.oh-my-zsh/
 .ssh/
 .gnupg/
 .aws/
-.kube/
-.ansible/
 .netrc
 .env
 *.pem

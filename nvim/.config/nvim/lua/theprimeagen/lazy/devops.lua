@@ -1,7 +1,6 @@
 -- DevOps / SRE toolchain layered on top of the Primeagen base config.
--- LSP servers live in lazy/lsp.lua; this file only adds the extra editors
--- tools (Mason CLI installs, Ansible runner, Java) that do not come from an
--- LSP server.
+-- LSP servers live in lazy/lsp.lua; this file only adds the extra editor
+-- tools (Mason CLI installs, Java) that do not come from an LSP server.
 return {
   ---------------------------------------------------------------------------
   -- CLI tools, linters and formatters installed through Mason. Only tools not
@@ -17,8 +16,6 @@ return {
         "shfmt", -- shell formatting
         "stylua", -- lua formatting
         "prettier", -- js/ts/json formatting
-        "hadolint", -- Dockerfile
-        "tflint", -- Terraform
         "markdownlint-cli2", -- Markdown
         "checkmake", -- Makefiles
         "dotenv-linter", -- .env
@@ -26,29 +23,6 @@ return {
         "regal", -- Rego
         "jq", -- data / query
         "yq", -- data / query
-        "docker-compose-linter", -- Docker Compose
-        "kube-linter", -- Kubernetes
-        "kubescape", -- Kubernetes
-        "trivy", -- IaC / container security
-      },
-    },
-  },
-
-  ---------------------------------------------------------------------------
-  -- Ansible: run playbooks/roles from the editor.
-  ---------------------------------------------------------------------------
-  {
-    "mfussenegger/nvim-ansible",
-    ft = { "yaml", "yaml.ansible" },
-    keys = {
-      {
-        "<leader>ta",
-        function()
-          require("ansible").run()
-        end,
-        ft = "yaml.ansible",
-        desc = "Ansible Run Playbook/Role",
-        silent = true,
       },
     },
   },

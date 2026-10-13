@@ -12,7 +12,6 @@ My Linux (Ubuntu) dotfiles, managed with [GNU Stow](https://www.gnu.org/software
 | `tmux`  | `.tmux.conf`, `.local/bin/tmux-sessionizer` | Tmux configuration (prefix `C-a`, vim-style pane switching, sessionizer) |
 | `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS terminal palette (`macOS`); `install.sh` also sets login-shell, bold-is-bright, a block cursor and SF Mono |
 | `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) |
-| `k9s`   | `.config/k9s` | [k9s](https://k9scli.io/) config with a `macos-dark` skin matching the terminal palette |
 
 `macos-desktop/` is not a Stow package (nothing in it links into `$HOME`); it is
 the optional desktop theming script described below.
@@ -97,5 +96,4 @@ stow --simulate --verbose zsh
 ## Not included
 
 Secrets and machine state are intentionally out of the repo: SSH and GPG keys,
-cloud credentials (`~/.aws`, `~/.kube`, `~/.ansible`), caches, and installed
-binaries (`~/.local/bin`).
+cloud credentials (`~/.aws`), caches, and installed binaries (`~/.local/bin`).

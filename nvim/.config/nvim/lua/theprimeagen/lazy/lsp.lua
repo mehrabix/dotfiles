@@ -77,11 +77,7 @@ return {
       },
     })
 
-    vim.lsp.config("ansiblels", { capabilities = capabilities })
     vim.lsp.config("bashls", { capabilities = capabilities })
-    vim.lsp.config("dockerls", { capabilities = capabilities })
-    vim.lsp.config("helm_ls", { capabilities = capabilities })
-    vim.lsp.config("terraformls", { capabilities = capabilities })
     vim.lsp.config("gh_actions_ls", { capabilities = capabilities })
     vim.lsp.config("pyright", { capabilities = capabilities })
     vim.lsp.config("vtsls", { capabilities = capabilities })
@@ -96,10 +92,6 @@ return {
         "jsonls",
         "yamlls",
         -- devops
-        "dockerls",
-        "helm_ls",
-        "terraformls",
-        "ansiblels",
         "gh_actions_ls",
       },
       automatic_enable = true,

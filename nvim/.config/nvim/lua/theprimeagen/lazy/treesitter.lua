@@ -20,13 +20,10 @@ return {
         "go",
         -- devops stack
         "bash",
-        "dockerfile",
         "gitattributes",
         "gitcommit",
         "git_config",
         "graphql",
-        "hcl",
-        "helm",
         "ini",
         "jq",
         "json5",
@@ -41,7 +38,6 @@ return {
         "rego",
         "sql",
         "ssh_config",
-        "terraform",
         "yaml",
         "cue",
       }

@@ -6,12 +6,6 @@ return {
 
     lint.linters_by_ft = {
       yaml = { "actionlint" },
-      -- ansible-lint runs inside ansible-language-server, so it is not mapped
-      -- here (it would duplicate every diagnostic).
-      dockerfile = { "hadolint" },
-      terraform = { "tflint" },
-      tf = { "tflint" },
-      hcl = { "tflint" },
       sh = { "shellcheck" },
       bash = { "shellcheck" },
       zsh = { "shellcheck" },
@@ -22,7 +16,7 @@ return {
     }
 
     -- actionlint only understands GitHub Actions workflows; keep it away from
-    -- every other YAML file (k8s manifests, compose, ...).
+    -- every other YAML file.
     lint.linters.actionlint = lint.linters.actionlint or {}
     local actionlint = lint.linters.actionlint
     actionlint.condition = function(ctx)
