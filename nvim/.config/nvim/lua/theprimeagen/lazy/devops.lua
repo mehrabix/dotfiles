@@ -40,8 +40,23 @@ return {
       "MunifTanjim/nui.nvim",
     },
     config = function()
+      -- nvim-java still pins jdtls 1.54.0, whose startup check only accepts
+      -- Java 21-25 and aborts on the system JDK 27. Use Mason's jdtls (1.61+,
+      -- which knows Java 27) and point jdk.path at the system JDK so that the
+      -- outdated range check is skipped.
+      local java_exe = vim.fn.exepath("java")
+      local jdk_home = java_exe ~= ""
+          and vim.fn.fnamemodify(vim.fn.resolve(java_exe), ":h:h")
+        or nil
+
       require("java").setup({
-        jdk = { auto_install = false },
+        jdk = {
+          auto_install = false,
+          path = jdk_home,
+        },
+        jdtls = {
+          path = vim.fn.stdpath("data") .. "/mason/packages/jdtls",
+        },
       })
     end,
   },
