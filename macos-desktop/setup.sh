@@ -139,9 +139,11 @@ install_fonts() {
 }
 
 # ── 4. GNOME extensions ────────────────────────────────────────
+# Only extensions that are not shipped with Ubuntu are downloaded here. The
+# dock is Ubuntu Dock (`ubuntu-dock@ubuntu.com`), which ships with Ubuntu and is
+# enabled below; Dash to Dock is not installed.
 EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
-  "dash-to-dock@micxgx.gmail.com"
   "just-perfection-desktop@just-perfection"
 )
 # Blur my Shell is intentionally not used. Its dash background actor is built
@@ -151,8 +153,15 @@ EXTENSIONS=(
 # is correct from the first frame.
 ENABLED_EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
-  "dash-to-dock@micxgx.gmail.com"
+  "ubuntu-dock@ubuntu.com"
   "just-perfection-desktop@just-perfection"
+)
+# User-installed docks/extensions from older revisions of this script. Ubuntu
+# Dock (and the WhiteSur shell theme) replaces them.
+LEGACY_EXTENSIONS=(
+  "dash-to-dock@micxgx.gmail.com"
+  "blur-my-shell@aunetx"
+  "trayIconsReloaded@selfmade.pl"
 )
 
 install_extensions() {
@@ -175,6 +184,16 @@ install_extensions() {
     rm -rf "$EXT_DIR/$uuid"; mkdir -p "$EXT_DIR/$uuid"
     unzip -q -o "$uuid.zip" -d "$EXT_DIR/$uuid"
     glib-compile-schemas "$EXT_DIR/$uuid/schemas" 2>/dev/null || true
+  done
+}
+
+remove_legacy_extensions() {
+  local uuid
+  for uuid in "${LEGACY_EXTENSIONS[@]}"; do
+    [[ -d "$EXT_DIR/$uuid" ]] || continue
+    info "Removing legacy extension $uuid..."
+    gnome-extensions disable "$uuid" 2>/dev/null || true
+    rm -rf "$EXT_DIR/$uuid"
   done
 }
 
@@ -213,23 +232,24 @@ apply() {
   gsettings set org.gnome.desktop.wm.keybindings switch-input-source \
     "['<Shift>Alt_L', '<Alt>Shift_L', '<Shift>Alt_R', '<Alt>Shift_R']"
 
-  # Ubuntu's own dock stays off: Dash to Dock already draws the dock, and two
-  # docks at once is duplicated work on a weak GPU. The snapd/web search
-  # providers are dropped too; they only add Overview search noise.
+  # The dock is Ubuntu Dock; Dash to Dock and the disabled leftovers are
+  # removed above. The snapd/web search providers are dropped too; they only
+  # add Overview search noise.
   gsettings set org.gnome.shell enabled-extensions \
-    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}']"
+    "['ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'ubuntu-appindicators@ubuntu.com', '${ENABLED_EXTENSIONS[0]}', '${ENABLED_EXTENSIONS[1]}', '${ENABLED_EXTENSIONS[2]}']"
 
   # Extension schemas are not on the default search path.
   local G="$EXT_DIR/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
   GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.user-theme name "$SHELL_THEME" || true
 
-  # Dock placement and behaviour. Pin it to a display by connector name (HDMI-1
-  # is the external monitor; the laptop panel is eDP-1) and make clicks behave
-  # like the macOS Dock: click minimizes, scroll switches windows, middle-click
-  # launches a new instance. `preferred-monitor -2` means "use the connector".
-  G="$EXT_DIR/dash-to-dock@micxgx.gmail.com/schemas"
-  for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 48" "show-apps-at-top true" "click-action minimize" "scroll-action switch-window" "middle-click-action launch" "preferred-monitor -2" "preferred-monitor-by-connector $DOCK_MONITOR"; do
-    GSETTINGS_SCHEMA_DIR="$G" gsettings set org.gnome.shell.extensions.dash-to-dock ${kv} || true
+  # Ubuntu Dock uses the dash-to-dock schema (installed system-wide), so no
+  # GSETTINGS_SCHEMA_DIR override is needed. Pin it to a display by connector
+  # name (HDMI-1 is the external monitor; the laptop panel is eDP-1) and make
+  # clicks behave like the macOS Dock: click minimizes, scroll switches
+  # workspaces, middle-click launches a new instance. `preferred-monitor -2`
+  # means "use the connector".
+  for kv in "dock-position BOTTOM" "extend-height false" "autohide true" "dash-max-icon-size 42" "show-apps-at-top false" "click-action minimize" "scroll-action switch-workspace" "middle-click-action launch" "preferred-monitor -2" "preferred-monitor-by-connector $DOCK_MONITOR"; do
+    gsettings set org.gnome.shell.extensions.dash-to-dock ${kv} || true
   done
 
   G="$EXT_DIR/just-perfection-desktop@just-perfection/schemas"
@@ -244,7 +264,7 @@ apply() {
   gsettings set "$MEDIA.custom-keybinding:$CK" command 'nautilus'
   gsettings set "$MEDIA.custom-keybinding:$CK" binding '<Super>e'
 
-  # The dock is drawn by Dash to Dock and rounded by the WhiteSur shell theme
+  # The dock is drawn by Ubuntu Dock and rounded by the WhiteSur shell theme
   # (border-radius on `.dash-background`), so no blur extension is needed and the
   # dock is correct from the first frame at login.
 
@@ -269,5 +289,6 @@ fi
 install_look
 install_fonts
 install_extensions
+remove_legacy_extensions
 apply
 [[ "$WITH_SUDO" == true ]] && install_gdm

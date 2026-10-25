@@ -33,15 +33,18 @@ The installer is idempotent — re-run it any time to relink after changes.
 
 `macos-desktop/setup.sh` themes the GNOME desktop like macOS: the WhiteSur GTK
 theme (dark, solid blue), icon theme and cursors, SF Pro from Apple, the User
-Themes / Dash to Dock / Just Perfection extensions, a Sonoma wallpaper, and the
+Themes / Ubuntu Dock / Just Perfection extensions, a Sonoma wallpaper, and the
 matching gsettings (dark blue accent, window buttons on the right, bottom dock,
 clock on the right).
 
-The dock is drawn by Dash to Dock and **rounded by the shell theme itself**
-(`border-radius` on `.dash-background`), with no blur extension: Blur my Shell's
-dash actor is built before the dock has an allocation, which left the dock
-visibly glitched for a few seconds after login. Ubuntu's own dock is disabled —
-Dash to Dock already draws it.
+The dock is Ubuntu's own **Ubuntu Dock** (the system Dash to Dock fork), pinned
+to the `HDMI-1` display and **rounded by the shell theme itself** (`border-radius`
+on `.dash-background`), with no blur extension: Blur my Shell's dash actor is
+built before the dock has an allocation, which left the dock visibly glitched for
+a few seconds after login. Dash to Dock is not installed — Ubuntu Dock already
+draws the dock, so keeping both would duplicate work on a weak GPU. The script
+removes the user-installed Dash to Dock / Blur my Shell / Tray Icons Reloaded
+leftovers on re-run.
 
 Keyboard layouts switch with Alt+Shift on **either side and in either order**
 (bound through the shell's `switch-input-source`; `lv3:ralt_alt` keeps Right Alt
@@ -49,7 +52,7 @@ a plain Alt so it can take part in the chord).
 
 Smaller familiarities: battery percentage and a weekday clock in the panel, a
 top-left hot corner for the Overview (Mission Control), workspaces on every
-display, macOS-style dock clicks (click minimizes, scroll switches windows,
+display, macOS-style dock clicks (click minimizes, scroll switches workspaces,
 middle-click launches) and Super+E for the file manager.
 
 ```sh
