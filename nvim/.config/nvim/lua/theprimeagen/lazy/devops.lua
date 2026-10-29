@@ -5,9 +5,13 @@ return {
   ---------------------------------------------------------------------------
   -- CLI tools, linters and formatters installed through Mason. Only tools not
   -- already pulled in as an LSP server dependency belong here.
+  --
+  -- mason.nvim 2.x no longer has an `ensure_installed` option (it used to), so
+  -- these are handed to mason-tool-installer, which installs on startup.
   ---------------------------------------------------------------------------
   {
-    "williamboman/mason.nvim",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    dependencies = { "williamboman/mason.nvim" },
     opts = {
       ensure_installed = {
         "yamlfmt", -- YAML

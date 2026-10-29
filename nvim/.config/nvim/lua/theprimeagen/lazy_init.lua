@@ -1,5 +1,9 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+local lazy_entry = lazypath .. "/lua/lazy/init.lua"
+-- Check the checkout, not just the directory: a clone interrupted mid-way leaves
+-- an empty .git that makes every later start fail with "module 'lazy' not found".
+if not (vim.uv or vim.loop).fs_stat(lazy_entry) then
+  vim.fn.delete(lazypath, "rf")
   vim.fn.system({
     "git",
     "clone",

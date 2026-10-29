@@ -105,7 +105,8 @@ alias mkdir='mkdir -pv'
 alias grep='grep --color=auto'
 alias diff='diff --color=auto'
 alias ping='ping -c 5'
-alias fd='fdfind'
+# Debian/Ubuntu ship fd as `fdfind`; Arch (and Fedora) ship plain `fd`.
+(( $+commands[fdfind] )) && alias fd='fdfind'
 
 # ─────────────────────────────────────────────────────────────
 # Colors (macOS terminal palette)
@@ -144,23 +145,30 @@ bindkey '^[[H' backward-kill-word     # same, for terminals that send this
 # ─────────────────────────────────────────────────────────────
 # Bracketed paste
 # ─────────────────────────────────────────────────────────────
-# This zsh build (5.9-8ubuntu3) is compiled WITHOUT ZLE bracketed-paste
-# support, so terminals that send \e[200~ / \e[201~ (Ubuntu's ptyxis does)
-# get those markers inserted as literal text, which produced errors like:
+# Ubuntu's zsh build (5.9-8ubuntu3) is compiled WITHOUT ZLE bracketed-paste
+# support, so terminals that send \e[200~ / \e[201~ get those markers inserted
+# as literal text, which produced errors like:
 #   zsh: bad pattern: ^[[200~sudo
-# Binding the markers to a no-op widget makes ZLE swallow them, so pasted
-# text arrives clean. Newlines still behave normally — press Enter to run.
-_zsh_bp_noop() { : }
-zle -N _zsh_bp_noop 2>/dev/null
-bindkey $'\e\[200~' _zsh_bp_noop 2>/dev/null
-bindkey $'\e\[201~' _zsh_bp_noop 2>/dev/null
-bindkey $'\e\[?2004h' _zsh_bp_noop 2>/dev/null
-bindkey $'\e\[?2004l' _zsh_bp_noop 2>/dev/null
+# Binding the markers to a no-op widget makes ZLE swallow them. Arch's zsh does
+# support bracketed paste natively, so only install the workaround when the
+# widget is missing — otherwise it would break real bracketed paste (pasted
+# newlines would stop being handled safely).
+if (( ! $+widgets[bracketed-paste] )); then
+  _zsh_bp_noop() { : }
+  zle -N _zsh_bp_noop 2>/dev/null
+  bindkey $'\e\[200~' _zsh_bp_noop 2>/dev/null
+  bindkey $'\e\[201~' _zsh_bp_noop 2>/dev/null
+  bindkey $'\e\[?2004h' _zsh_bp_noop 2>/dev/null
+  bindkey $'\e\[?2004l' _zsh_bp_noop 2>/dev/null
+fi
 
 # ─────────────────────────────────────────────────────────────
 # Tooling (nvm, PATH)
 # ─────────────────────────────────────────────────────────────
 export PATH="$HOME/.local/bin:$PATH"
+
+# opencode's installer drops its binary here on Linux.
+[[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
 

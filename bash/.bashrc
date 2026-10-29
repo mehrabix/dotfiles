@@ -28,7 +28,12 @@ shopt -s checkwinsize
 #shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+# Arch ships /usr/bin/lesspipe.sh, Debian/Ubuntu ship /usr/bin/lesspipe.
+if [ -x /usr/bin/lesspipe ]; then
+    eval "$(SHELL=/bin/sh lesspipe)"
+elif [ -x /usr/bin/lesspipe.sh ]; then
+    eval "$(/usr/bin/lesspipe.sh)"
+fi
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
@@ -116,5 +121,14 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# User-local binaries (tmux-sessionizer lives here via the tmux package).
+case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+
 # opencode
-export PATH=/home/ahmad/.opencode/bin:$PATH
+case ":$PATH:" in
+    *":$HOME/.opencode/bin:"*) ;;
+    *) export PATH="$HOME/.opencode/bin:$PATH" ;;
+esac
