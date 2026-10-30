@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+#
+# game-run — launch a Steam game on the discrete AMD Radeon R5 M445 with the
+# maximum this laptop can sustain, on the big external monitor.
+#
+# Steam launch options:   /home/ahmad/.local/bin/game-run %command%
+#
+# What it does:
+#   * puts the game on the external monitor (GNOME primary decides placement)
+#   * wakes the dGPU (it is runtime-suspended; amdgpu saves battery when idle)
+#   * forces DRI_PRIME + the RADV Vulkan ICD, so DXVK/VKD3D/native Vulkan all
+#     land on the dGPU instead of the Intel HD 620
+#   * enables Mesa's pipeline library and a larger on-disk shader cache, which
+#     removes most of the first-run compile stutter
+#   * hands the process to GameMode (CPU governor, I/O priority, reaper)
+#
+# Environment overrides:
+#   GAME_MONITOR=DP-1    use a different output (default: first external one)
+#
+set -uo pipefail
+
+DGPU_PCI="pci-0000_01_00_0"
+
+# --- Display ----------------------------------------------------------------
+# GNOME opens new windows on the primary monitor, and both XWayland and Wine
+# use it for fullscreen, so the primary is what decides where a game appears.
+# Pick the target output, then repair the primary flag if something (hotplug,
+# a GNOME update) moved it back to the laptop panel.
+game_monitor="${GAME_MONITOR:-}"
+if [[ -z "$game_monitor" ]]; then
+  # xrandr names are the ones gdctl/Steam see (HDMI-1, not the DRM HDMI-A-1);
+  # the internal panel is eDP/LVDS/DSI, everything else counts as external.
+  game_monitor="$(xrandr --query 2>/dev/null |
+    awk '/ connected /{print $1}' |
+    grep -vE '^(eDP|LVDS|DSI)' |
+    head -n 1)"
+fi
+
+if [[ -n "$game_monitor" ]] && command -v gdctl >/dev/null 2>&1; then
+  primary="$(xrandr --query 2>/dev/null | awk '/ connected primary /{print $1; exit}')"
+  if [[ -n "$primary" && "$primary" != "$game_monitor" ]]; then
+    # Re-apply the live layout with the game monitor primary; positions come
+    # from xrandr so no window is reshuffled.
+    layout=()
+    while read -r name geometry; do
+      rest="${geometry#*+}"
+      layout+=(--logical-monitor --monitor "$name" --x "${rest%%+*}" --y "${rest##*+}")
+      [[ "$name" == "$game_monitor" ]] && layout+=(--primary)
+    done < <(xrandr --query 2>/dev/null | awk '
+      / connected / { for (i = 1; i <= NF; i++) if ($i ~ /^[0-9]+x[0-9]+\+/) { print $1, $i; break } }')
+    if ((${#layout[@]})); then
+      gdctl set -P "${layout[@]}" >/dev/null 2>&1 \
+        && printf 'game-run: %s is now the primary display\n' "$game_monitor" >&2 \
+        || printf 'game-run: could not make %s primary, game may open on the laptop panel\n' \
+             "$game_monitor" >&2
+    fi
+  fi
+fi
+
+# The dGPU may be power-gated and its render node absent until amdgpu probes.
+if [ ! -e "/dev/dri/by-path/${DGPU_PCI}-render" ]; then
+  modprobe amdgpu 2>/dev/null || true
+  for _ in $(seq 1 100); do
+    [ -e "/dev/dri/by-path/${DGPU_PCI}-render" ] && break
+    sleep 0.05
+  done
+fi
+
+# Render (behind the scenes) on the dGPU, display on the Intel iGPU (PRIME).
+export DRI_PRIME="${DGPU_PCI}"
+
+# Vulkan: only expose RADV. Without this the loader enumerates Intel first and
+# DXVK/VKD3D may pick the much slower HD 620.
+export VK_LOADER_DRIVERS_SELECT='*radeon*'
+
+# Mesa / RADV: Graphics Pipeline Library is on by default in modern Mesa, keep
+# it explicit; a bigger cache avoids recompiling shaders every session.
+export RADV_PERFTEST=gpl
+export MESA_SHADER_CACHE_MAX_SIZE=6G
+export mesa_glthread=true
+
+# Proton shader caches on the SSD (both are enabled by default, pin the paths so
+# they survive prefix cleanups).
+cache="${XDG_CACHE_HOME:-$HOME/.cache}"
+export DXVK_STATE_CACHE=1
+export VKD3D_SHADER_CACHE_PATH="$cache/vkd3d"
+mkdir -p "$cache/vkd3d" 2>/dev/null || true
+
+exec gamemoderun "$@"

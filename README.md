@@ -177,6 +177,87 @@ that exist on this distro: masks Ubuntu's crash notifier
 sudo-rs's `pwfeedback` so sudo asks for the password silently. Each is reversible
 — see the comments in `install.sh`. Use `--no-tweaks` to skip all of them.
 
+## Gaming (Steam)
+
+This laptop is a Dell Inspiron 5567: 2-core / 4-thread i7-7500U (15 W), 15 GB
+RAM, Intel HD 620 plus an AMD Radeon R5 M445 (4 GB, `iceland`/GCN 4, PCIe 3.0
+x4). The dGPU renders, the iGPU drives both 1080p60 panels. Games run through a
+small wrapper so no game has to be configured twice.
+
+### `game-run`
+
+`~/.local/bin/game-run` is the launch prefix for every Steam title. It:
+
+- wakes the dGPU (amdgpu runtime-suspends it when idle) and waits for its render
+  node,
+- exports `DRI_PRIME=pci-0000_01_00_0` so GL/VA-API land on the Radeon,
+- exports `VK_LOADER_DRIVERS_SELECT='*radeon*'` so Vulkan (and therefore
+  DXVK/VKD3D) never falls back to the HD 620,
+- turns on RADV's pipeline library and a 6 GB shader cache to kill first-run
+  compile stutter, plus `mesa_glthread` for GL games,
+- pins DXVK/VKD3D state caches to the SSD,
+- `exec`s `gamemoderun "$@"` (governor, I/O priority, `SCHED_ISO` reaper).
+
+`~/.config/gamemode.ini` leaves the CPU governor alone: power-profiles-daemon's
+"performance" profile drives intel_pstate through EPP=performance and
+max_perf_pct=100, while pinning the governor itself to `performance` holds every
+core at 3.5 GHz and just reaches the 92 °C throttle wall sooner. GameMode still
+does the useful parts (I/O priority, `SCHED_ISO` reaper).
+
+### Which monitor
+
+Games always land on the Samsung 27" (`HDMI-1`, 1920×1080@60):
+
+- `monitors.xml` marks it primary and GNOME places new windows there; XWayland
+  and Wine both use the primary output for fullscreen.
+- Before launching, `game-run` checks the live primary with `gdctl` and
+  re-applies the same layout with `HDMI-1` primary if a hotplug or a GNOME
+  update moved it back to the laptop panel (positions are read from `xrandr`,
+  so nothing gets reshuffled).
+- `GAME_MONITOR=DP-1 game-run …` targets a different output by hand.
+
+The laptop panel stays on as the second screen: Samsung at 0–1920, eDP-1 at
+1920–3840.
+
+### Steam launch options
+
+```
+CS2       /home/ahmad/.local/bin/game-run %command% -fullscreen -novid -nojoy -high +fps_max 60
+Asphalt   /home/ahmad/.local/bin/game-run %command%
+```
+
+They live in `userdata/<id>/config/localconfig.vdf` and survive restarts; Steam
+rewrites that file, so re-check after a Steam update. To make a different game
+use the dGPU, give it the Asphalt line.
+
+### CS2
+
+`cs2_video.txt` is set to exclusive fullscreen (not borderless), vsync off, FSR
+on, low/medium detail, and `fps_max 60` in `cs2_machine_convars.vcfg`. Capping
+at the panel refresh keeps the 15 W CPU from throttling: 400 fps just cooks it
+and adds frame-time variance. On this hardware ~60 fps at 1080p is the realistic
+target; if it dips, drop the render resolution via FSR before touching anything
+else.
+
+### Asphalt Legends
+
+DX12 through VKD3D-Proton, which is 70–100 % slower than native DX12 on GCN 4.
+`-dx11` (add it after `%command%`) can help but crashes on some updates. Only
+install 32-bit Vulkan if a game is actually 32-bit:
+
+```sh
+sudo pacman -S --needed lib32-vulkan-radeon lib32-vulkan-intel lib32-gamemode lib32-mangohud
+```
+
+### Thermals are the real ceiling
+
+Sustained 4-thread load pins the package at 92–93 °C within ~15 s, the fan
+hits ~5500 RPM, and the CPU clamps to ~3.0 GHz. No kernel throttle events are
+logged — this is the firmware doing its job on 9-year-old thermal paste. If
+frames degrade the longer you play, repaste the cooler and clean the fan;
+nothing in software fixes that. Play on AC (the power profile is already
+`performance`), and keep the lid open with the vents clear.
+
 ## How it works
 
 Each top-level directory is a Stow package whose tree mirrors `$HOME`:

@@ -23,6 +23,7 @@ warn() { printf '\033[1;33m[warn]\033[0m %s\n' "$*"; }
 # install.sh will link them on the next restore.
 PATHS=(
   .npmrc
+  .local/bin/game-run
   .local/bin/gnome-theme-switcher
   .config/alacritty
   .config/background
@@ -33,6 +34,7 @@ PATHS=(
   .config/equibop/settings/settings.json
   .config/fastfetch/config.jsonc
   .config/fish
+  .config/gamemode.ini
   .config/ghostty
   .config/gtk-3.0/bookmarks
   .config/kdeglobals
@@ -74,7 +76,7 @@ done
 rm -rf "$DEST"
 mv "$stage" "$DEST"
 trap - EXIT
-chmod +x "$DEST/.local/bin/gnome-theme-switcher" 2>/dev/null || true
+chmod +x "$DEST/.local/bin/gnome-theme-switcher" "$DEST/.local/bin/game-run" 2>/dev/null || true
 
 # --- 2. GNOME settings -------------------------------------------------------
 # dconf holds the desktop settings (theme, extensions, keybindings, wallpaper,

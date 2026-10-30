@@ -121,6 +121,28 @@ if [[ "$INSTALL_PACKAGES" == true ]]; then
   else
     info "Dependencies already installed."
   fi
+
+  # --- 1b. Gaming stack ------------------------------------------------------
+  # Only on Arch: these names differ everywhere else, and Steam itself is a
+  # personal choice, so it is not installed here. GameMode + MangoHud and both
+  # Vulkan drivers (64- and 32-bit) are what game-run/.local/bin relies on.
+  if [[ "$PM" == pacman ]] && command -v steam >/dev/null 2>&1; then
+    gaming=(gamemode mangohud vulkan-radeon vulkan-intel)
+    # 32-bit driver stack, for 32-bit games and Steam's own helper processes.
+    if pacman -Si lib32-vulkan-radeon >/dev/null 2>&1; then
+      gaming+=(lib32-vulkan-radeon lib32-vulkan-intel lib32-gamemode lib32-mangohud)
+    fi
+    missing_gaming=()
+    for pkg in "${gaming[@]}"; do
+      pacman -Qq "$pkg" >/dev/null 2>&1 || missing_gaming+=("$pkg")
+    done
+    if ((${#missing_gaming[@]})); then
+      info "Missing gaming packages: ${missing_gaming[*]}"
+      install_packages "${missing_gaming[@]}"
+    else
+      info "Gaming packages already installed."
+    fi
+  fi
 fi
 
 # --- 2. Oh My Zsh ------------------------------------------------------------
