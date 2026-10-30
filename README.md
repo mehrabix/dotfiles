@@ -13,8 +13,8 @@ My Linux dotfiles (Arch and Debian/Ubuntu), managed with [GNU Stow](https://www.
 | `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS terminal palette (`macOS`); `install.sh` also sets login-shell, bold-is-bright, a block cursor, SF Mono and background opacity |
 | `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) |
 
-`macos-desktop/` is not a Stow package (nothing in it links into `$HOME`); it is
-the optional desktop theming script described below.
+`dracula-desktop/` is not a Stow package (nothing in it links into `$HOME`); it
+is the optional desktop theming script described below.
 
 `~/dotfiles/install.sh` also installs Oh My Zsh and the custom plugins/theme the
 zsh config depends on. Those live in `~/.oh-my-zsh` and are **not** versioned
@@ -30,32 +30,37 @@ git clone https://github.com/mehrabix/dotfiles.git ~/.dotfiles
 The installer is idempotent — re-run it any time to relink after changes.
 Use `--no-packages`, `--no-shell` or `--no-tweaks` to skip a stage.
 
-## macOS-style desktop
+## Desktop look (Dracula + glass)
 
-`macos-desktop/setup.sh` themes GNOME like macOS: the WhiteSur GTK/shell theme,
-icon theme and cursors, SF Pro + SF Mono from Apple, a Sonoma wallpaper, and the
-matching gsettings (blue accent, window buttons on the right, bottom dock, clock
-on the right).
+`dracula-desktop/setup.sh` gives GNOME a translucent, purple-tinted look:
+
+- **Dracula GTK** for GTK3 and GTK4/libadwaita apps. It is a colour theme, so
+  window controls stay GNOME's own (symbolic, right side) instead of macOS
+  traffic lights.
+- **Tela-circle-dracula** icons and the **Catppuccin Mocha** cursor.
+- GNOME's own shell theme, with the panel, dash and popups blurred by **Blur my
+  Shell** — no WhiteSur shell theme and no dock rounding hacks.
+- Purple accent colour, dark scheme, SF Pro / SF Mono.
 
 ```sh
-~/.dotfiles/macos-desktop/setup.sh              # user-level only
-~/.dotfiles/macos-desktop/setup.sh --solid      # opaque WhiteSur (no transparency)
-~/.dotfiles/macos-desktop/setup.sh --with-sudo  # + build deps + GDM login screen
+~/.dotfiles/dracula-desktop/setup.sh              # Dracula + glass
+~/.dotfiles/dracula-desktop/setup.sh --solid      # same, no blur/transparency
+~/.dotfiles/dracula-desktop/setup.sh --whitesur   # the old WhiteSur macOS look
+~/.dotfiles/dracula-desktop/setup.sh --with-sudo  # + build deps + GDM login screen
 ```
 
 The dock is **Dash to Dock** on Arch (`gnome-shell-extension-dash-to-dock`) and
 Ubuntu Dock on Ubuntu — the script detects whichever is present, pins it to
-`HDMI-1`, and makes clicks behave like the macOS Dock (click minimizes, scroll
-switches workspaces, middle-click launches). `DOCK_MONITOR=eDP-1` overrides the
-display.
+`HDMI-1`, and makes clicks behave like a dock (click minimizes, scroll switches
+workspaces, middle-click launches). `DOCK_MONITOR=eDP-1` overrides the display.
 
 Keyboard layouts switch with Alt+Shift on **either side and in either order**
 (bound through the shell's `switch-input-source`; `lv3:ralt_alt` keeps Right Alt
 a plain Alt so it can take part in the chord).
 
 Smaller familiarities: battery percentage and a weekday clock in the panel, a
-top-left hot corner for the Overview (Mission Control), workspaces on every
-display, and Super+E for the file manager.
+top-left hot corner for the Overview, workspaces on every display, and Super+E
+for the file manager.
 
 ### Transparency
 
@@ -63,14 +68,17 @@ GNOME cannot blur the windows *behind* another window — Mutter has no per-wind
 backdrop blur like Hyprland's `blur` rule. The closest equivalent is **Blur my
 Shell**: the panel, dash, popups, Overview and app folders get a real blurred
 backdrop, and its `applications` component makes every window translucent over
-the blurred desktop, with rounded corners. Ptyxis gets its own background
+the blurred desktop. App opacity is 180/255; Ptyxis gets its own background
 opacity (0.85).
 
-That is applied by default. `--solid` switches back to the plain
-`WhiteSur-Dark-solid-*` theme and skips the Blur my Shell settings. GTK4 /
-libadwaita apps get the same theme (and translucency) through
-`~/.config/gtk-4.0`, which the script links to the WhiteSur CSS. Qt apps
-(Zed, etc.) stay opaque unless a Qt style such as Kvantum is installed.
+Corner rounding is left to the GTK theme. Blur my Shell clipping windows at a
+different radius drew a second arc over the theme's rounded corners, so its own
+rounding is disabled (`rounded-corners 3`).
+
+`--solid` skips the Blur my Shell settings entirely. GTK4 / libadwaita apps get
+the same theme through `~/.config/gtk-4.0` (and `~/.config/assets` for
+Dracula's CSS). Qt apps (Zed, etc.) stay opaque unless a Qt style such as
+Kvantum is installed.
 
 Extensions are only loaded at login — Wayland cannot restart GNOME Shell in
 place, so log out and back in after running the script.
@@ -116,11 +124,13 @@ sudo mkinitcpio -P
   `pacman`/`apt`/`dnf`/`brew`).
 - [fzf](https://github.com/junegunn/fzf) for the `fzf-tab` completion picker
   (optional; the plugin stays disabled without it).
+- `curl`, `tar`, `gjs` and `unzip` for the Dracula/Tela downloads and the GNOME
+  extension settings.
 - SF Pro and SF Mono are downloaded from Apple's DMGs by `setup.sh`. If that
   fails, drop the fonts into `~/.local/share/fonts/` and run `fc-cache -f`; any
   Menlo-like monospace font works if you change the `font-name` in `install.sh`.
-- The theme build needs `git`, `curl`, `unzip`, `7z`, `cpio`, `python3`, `sassc`,
-  `glib-compile-resources` and `imagemagick` (`--with-sudo` installs them).
+- `--whitesur` additionally needs `sassc`, `glib-compile-resources`, `xmllint`,
+  `imagemagick`, `7z` and `cpio` to build WhiteSur (`--with-sudo` installs them).
 - A [Nerd Font](https://www.nerdfonts.com/) in your terminal for the prompt and
   icons. Only needed if you switch back to the Powerlevel10k prompt.
 - For Neovim: `ripgrep` (`rg`) for Telescope's live grep, `node`/`npm` for the

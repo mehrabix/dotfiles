@@ -1,44 +1,34 @@
 #!/usr/bin/env bash
 #
-# macos-desktop/setup.sh — make Linux / GNOME Shell look like macOS.
+# dracula-desktop/setup.sh — glass/translucent GNOME look (Dracula by default).
 #
 # Works on Arch (pacman), Debian/Ubuntu (apt) and Fedora (dnf). Everything
-# user-level lands in $HOME (themes, icons, cursors, fonts, extensions,
-# wallpaper) and is applied with gsettings. Two things need root: the theme
-# build dependencies (sassc, imagemagick, ...) and the GDM login screen theme.
-# Both are opt-in.
+# user-level lands in $HOME (themes, icons, cursors, fonts, extensions) and is
+# applied with gsettings. Two things need root: the WhiteSur theme build
+# dependencies (sassc, imagemagick, ...) and the GDM login screen theme. Both
+# are only used by --whitesur / --with-sudo.
 #
-#   ./macos-desktop/setup.sh                 user-level only
-#   ./macos-desktop/setup.sh --solid         keep the opaque WhiteSur variant
-#   ./macos-desktop/setup.sh --with-sudo     + build deps + GDM theme
-#   ./macos-desktop/setup.sh --gdm-only      only the GDM login screen theme
+#   ./dracula-desktop/setup.sh                 Dracula + glass
+#   ./dracula-desktop/setup.sh --solid         same, but no blur/transparency
+#   ./dracula-desktop/setup.sh --whitesur      the old WhiteSur macOS look
+#   ./dracula-desktop/setup.sh --with-sudo     + build deps + GDM theme
+#   ./dracula-desktop/setup.sh --gdm-only      only the GDM login screen theme
 #
 set -euo pipefail
 
 # ── Config ─────────────────────────────────────────────────────
-ACCENT="${ACCENT:-blue}"
-SHELL_THEME="WhiteSur-Dark-${ACCENT}"
-ICON_THEME="WhiteSur-dark"
-CURSOR_THEME="WhiteSur-cursors"
-WALLPAPER="Sonoma-dark.jpg"
-DOCK_MONITOR="${DOCK_MONITOR:-HDMI-1}"      # connector the dock is pinned to
-
-CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/macos-desktop"
-THEMES="$HOME/.themes"
-ICONS="$HOME/.local/share/icons"
-FONTS="$HOME/.local/share/fonts"
-EXT_DIR="$HOME/.local/share/gnome-shell/extensions"
-SYS_EXT_DIR="/usr/share/gnome-shell/extensions"
-WALL_DIR="$HOME/Pictures/Wallpapers"
-
-# Hyprland-style translucency: non-solid WhiteSur variant + Blur my Shell.
-# `--solid` restores the old fully opaque look.
+# dracula: Dracula GTK (purple), Tela-circle icons, Catppuccin cursor, native
+#          window buttons and Blur my Shell glass.
+# whitesur: WhiteSur GTK + shell theme, WhiteSur icons/cursors, Sonoma wallpaper.
+STYLE="dracula"
 SOLID=false
 WITH_SUDO=false
 GDM_ONLY=false
 
 for arg in "$@"; do
   case "$arg" in
+    --dracula) STYLE="dracula" ;;
+    --whitesur) STYLE="whitesur" ;;
     --solid) SOLID=true ;;
     --with-sudo) WITH_SUDO=true ;;
     --gdm-only) GDM_ONLY=true; WITH_SUDO=true ;;
@@ -46,11 +36,37 @@ for arg in "$@"; do
   esac
 done
 
-if [[ "$SOLID" == true ]]; then
-  GTK_THEME="WhiteSur-Dark-solid-${ACCENT}"
-else
-  GTK_THEME="WhiteSur-Dark-${ACCENT}"
-fi
+WALLPAPER="Sonoma-dark.jpg"
+DOCK_MONITOR="${DOCK_MONITOR:-HDMI-1}"      # connector the dock is pinned to
+
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/dracula-desktop"
+THEMES="$HOME/.themes"
+ICONS="$HOME/.local/share/icons"
+FONTS="$HOME/.local/share/fonts"
+EXT_DIR="$HOME/.local/share/gnome-shell/extensions"
+SYS_EXT_DIR="/usr/share/gnome-shell/extensions"
+WALL_DIR="$HOME/Pictures/Wallpapers"
+
+case "$STYLE" in
+  dracula)
+    ACCENT="${ACCENT:-purple}"
+    GTK_THEME="Dracula"
+    ICON_THEME="Tela-circle-dracula-dark"
+    CURSOR_THEME="${CURSOR_THEME:-catppuccin-mocha-dark-cursors}"
+    SHELL_THEME=""                       # GNOME's own shell theme, no macOS chrome
+    ;;
+  whitesur)
+    ACCENT="${ACCENT:-blue}"
+    if [[ "$SOLID" == true ]]; then
+      GTK_THEME="WhiteSur-Dark-solid-${ACCENT}"
+    else
+      GTK_THEME="WhiteSur-Dark-${ACCENT}"
+    fi
+    ICON_THEME="WhiteSur-dark"
+    CURSOR_THEME="${CURSOR_THEME:-WhiteSur-cursors}"
+    SHELL_THEME="WhiteSur-Dark-${ACCENT}"
+    ;;
+esac
 
 info() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[warn]\033[0m %s\n' "$*"; }
@@ -75,11 +91,15 @@ fi
 
 # ── 1. Build dependencies (sudo) ───────────────────────────────
 install_deps() {
-  local missing=()
-  for t in sassc glib-compile-resources xmllint convert 7z cpio fc-cache unzip python3; do
+  local tools=(curl tar gjs glib-compile-schemas fc-cache unzip python3)
+  # The WhiteSur theme is compiled from SCSS with ImageMagick, 7z and cpio.
+  [[ "$STYLE" == "whitesur" ]] && tools+=(sassc glib-compile-resources xmllint convert 7z cpio)
+
+  local missing=() t
+  for t in "${tools[@]}"; do
     command -v "$t" >/dev/null 2>&1 || missing+=("$t")
   done
-  ((${#missing[@]})) || { info "Build dependencies already present."; return; }
+  ((${#missing[@]})) || { info "Dependencies already present."; return; }
 
   if [[ "$WITH_SUDO" != true ]]; then
     warn "Missing tools: ${missing[*]}"
@@ -117,6 +137,17 @@ install_look() {
   mkdir -p "$CACHE" "$THEMES" "$ICONS" "$FONTS" "$WALL_DIR"
   cd "$CACHE"
 
+  if [[ "$STYLE" == "whitesur" ]]; then
+    install_whitesur
+  else
+    install_dracula
+  fi
+
+  link_gtk4
+  set_cursor_default
+}
+
+install_whitesur() {
   clone WhiteSur-gtk-theme gtk
   clone WhiteSur-icon-theme icon
   clone WhiteSur-cursors cursors
@@ -129,19 +160,6 @@ install_look() {
   else
     info "GTK theme already installed."
   fi
-
-  # GTK4/libadwaita apps ignore the GTK theme setting and read
-  # ~/.config/gtk-4.0/gtk.css instead. Link the theme's CSS + assets there so
-  # Nautilus, Settings, etc. get the same look and translucency.
-  local g4="$HOME/.config/gtk-4.0"
-  mkdir -p "$g4"
-  rm -f "$g4/gtk.css" "$g4/gtk-dark.css"
-  ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/gtk-dark.css" "$g4/gtk.css"
-  ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/gtk-dark.css" "$g4/gtk-dark.css"
-  for d in assets windows-assets; do
-    [[ -e "$g4/$d" && ! -L "$g4/$d" ]] && rm -rf "$g4/$d"
-    ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/$d" "$g4/$d"
-  done
 
   if [[ ! -d "$ICONS/$ICON_THEME" ]]; then
     info "Installing the WhiteSur icon theme..."
@@ -168,6 +186,68 @@ install_look() {
     gsettings set org.gnome.desktop.background picture-uri-dark "file://$WALL_DIR/$WALLPAPER"
   fi
 }
+
+# Dracula GTK is a colour theme (purple-tinted dark greys), Tela-circle adds a
+# matching icon set. Both are plain tarballs from GitHub, no compiler needed.
+install_dracula() {
+  if [[ ! -d "$THEMES/Dracula" ]]; then
+    info "Downloading the Dracula GTK theme..."
+    curl -sSL -o dracula-gtk.tar.gz \
+      "https://codeload.github.com/dracula/gtk/tar.gz/refs/heads/master"
+    rm -rf dracula-gtk && mkdir -p dracula-gtk
+    tar -xzf dracula-gtk.tar.gz -C dracula-gtk --strip-components=1
+    cp -a dracula-gtk "$THEMES/Dracula"
+  else
+    info "Dracula GTK theme already installed."
+  fi
+
+  if [[ ! -d "$ICONS/$ICON_THEME" ]]; then
+    info "Downloading the Tela-circle (Dracula) icon theme..."
+    curl -sSL -o tela-circle.tar.gz \
+      "https://codeload.github.com/vinceliuice/Tela-circle-icon-theme/tar.gz/refs/heads/master"
+    rm -rf tela-circle && mkdir -p tela-circle
+    tar -xzf tela-circle.tar.gz -C tela-circle --strip-components=1
+    (cd tela-circle && bash install.sh -d "$ICONS" dracula)
+  else
+    info "Tela-circle icon theme already installed."
+  fi
+}
+
+# GTK4/libadwaita apps ignore the GTK theme setting and read
+# ~/.config/gtk-4.0/gtk.css instead. Link the active theme's CSS there so
+# Nautilus, Settings, etc. get the same colours and translucency.
+link_gtk4() {
+  local g4="$HOME/.config/gtk-4.0"
+  mkdir -p "$g4"
+  rm -f "$g4/gtk.css" "$g4/gtk-dark.css" "$g4/assets" "$g4/windows-assets"
+
+  if [[ "$STYLE" == "whitesur" ]]; then
+    ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/gtk-dark.css" "$g4/gtk.css"
+    ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/gtk-dark.css" "$g4/gtk-dark.css"
+    for d in assets windows-assets; do
+      ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/$d" "$g4/$d"
+    done
+  else
+    ln -sfn "$THEMES/Dracula/gtk-4.0/gtk-dark.css" "$g4/gtk.css"
+    ln -sfn "$THEMES/Dracula/gtk-4.0/gtk-dark.css" "$g4/gtk-dark.css"
+    # Dracula's gtk-4.0 CSS refers to ../assets, i.e. ~/.config/assets.
+    ln -sfn "$THEMES/Dracula/assets" "$HOME/.config/assets"
+  fi
+}
+
+# X11/XWayland apps read ~/.icons/default instead of the gsettings key.
+set_cursor_default() {
+  local cursor="${CURSOR_THEME:-}"
+  have_cursor || cursor="Adwaita"
+  [[ -n "$cursor" ]] || return 0
+  mkdir -p "$HOME/.icons/default"
+  printf '[Icon Theme]\nName=Default\nInherits=%s\n' "$cursor" \
+    > "$HOME/.icons/default/index.theme"
+}
+
+# Fall back to Adwaita when the wanted cursor/icon set is not installed.
+have_cursor() { [[ -d "$ICONS/$CURSOR_THEME" || -d "/usr/share/icons/$CURSOR_THEME" ]]; }
+have_icons()  { [[ -d "$ICONS/$ICON_THEME"  || -d "/usr/share/icons/$ICON_THEME" ]]; }
 
 # ── 3. SF Pro / SF Mono (Apple) ────────────────────────────────
 extract_dmg_fonts() {
@@ -211,15 +291,15 @@ install_fonts() {
 # (Arch: user-theme, dash-to-dock, appindicator, desktop-icons-ng). Only the
 # missing ones are downloaded from extensions.gnome.org.
 #
-# Blur my Shell provides the transparency effects; Hibernate Power Menu adds the
-# Hibernate item that GNOME 51 itself does not ship.
+# Blur my Shell provides the transparency effects; Hibernate Power Menu adds
+# the Hibernate item GNOME 51 lacks.
 EXTENSIONS=(
   "user-theme@gnome-shell-extensions.gcampax.github.com"
   "just-perfection-desktop@just-perfection"
   "blur-my-shell@aunetx"
   "hibernate-power-menu@arnakazim"
 )
-# Familiar macOS/Ubuntu bits, enabled only when present on this machine.
+# Familiar Ubuntu bits, enabled only when present on this machine.
 COMPANION_EXTENSIONS=(
   "ding@rastersoft.com"
   "tiling-assistant@ubuntu.com"
@@ -321,8 +401,10 @@ apply_transparency() {
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.lockscreen blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.window-list blur true
 
-  # Every application window: translucent over the blurred desktop, with
-  # rounded corners. opacity is 25-255 (higher = more legible).
+  # Every application window: translucent over the blurred desktop. opacity is
+  # 25-255 (higher = more legible). Corner rounding is left to the GTK theme:
+  # Blur my Shell clipping at a different radius drew a second arc on top of
+  # the theme's rounded corners (rounded-corners 3 = do not round).
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications enable-all true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications static-blur true
@@ -330,8 +412,8 @@ apply_transparency() {
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur-on-overview false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications unblur-when-fullscreen true
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications rounded-corners 0
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications corner-radius 14
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications rounded-corners 3
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications corner-radius 12
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications corner-when-maximized false
 
   # Ptyxis has its own background opacity; the other apps get translucency from
@@ -353,26 +435,30 @@ apply_transparency() {
   gnome-extensions enable "$BMS" 2>/dev/null || true
 }
 
-# ── 6. Apply settings ──────────────────────────────────────────
+# ── 7. Apply settings ──────────────────────────────────────────
 apply() {
   local IFACE=org.gnome.desktop.interface
   local WMP=org.gnome.desktop.wm.preferences
+  local icons="$ICON_THEME" cursor="$CURSOR_THEME"
 
-  info "Applying the macOS look..."
+  have_icons  || { warn "$ICON_THEME is missing; keeping Adwaita icons."; icons="Adwaita"; }
+  have_cursor || { warn "$CURSOR_THEME is missing; keeping Adwaita cursors."; cursor="Adwaita"; }
+
+  info "Applying the $STYLE look..."
   gsettings set "$IFACE" gtk-theme "$GTK_THEME"
-  gsettings set "$IFACE" icon-theme "$ICON_THEME"
-  gsettings set "$IFACE" cursor-theme "$CURSOR_THEME"
+  gsettings set "$IFACE" icon-theme "$icons"
+  gsettings set "$IFACE" cursor-theme "$cursor"
   gsettings set "$IFACE" color-scheme 'prefer-dark'
   gsettings set "$IFACE" accent-color "$ACCENT"
   gsettings set "$IFACE" font-name 'SF Pro Display 11'
   gsettings set "$IFACE" document-font-name 'SF Pro Display 11'
   gsettings set "$IFACE" monospace-font-name 'SF Mono 11'
   gsettings set "$WMP" titlebar-font 'SF Pro Display Bold 11'
-  # Window buttons stay on the right by preference.
+  gsettings set "$WMP" theme "$GTK_THEME"
+  # Native GNOME window buttons on the right (not the macOS traffic lights of --whitesur).
   gsettings set "$WMP" button-layout ':minimize,maximize,close'
-  # Animations stay on for macOS-style smoothness. Panel/desktop touches: battery
-  # percentage, a clock with the weekday, a top-left hot corner for the Overview
-  # (Mission Control), and workspaces on every display.
+  # Panel/desktop touches: battery percentage, a clock with the weekday, a
+  # top-left hot corner for the Overview, and workspaces on every display.
   gsettings set "$IFACE" enable-animations true
   gsettings set "$IFACE" show-battery-percentage true
   gsettings set "$IFACE" clock-show-weekday true
@@ -400,12 +486,18 @@ apply() {
     gsettings set org.gnome.shell enabled-extensions "[$list]"
   fi
 
-  gs_ext "user-theme@gnome-shell-extensions.gcampax.github.com" \
-    org.gnome.shell.extensions.user-theme name "$SHELL_THEME"
+  if [[ "$STYLE" == "whitesur" ]]; then
+    gs_ext "user-theme@gnome-shell-extensions.gcampax.github.com" \
+      org.gnome.shell.extensions.user-theme name "$SHELL_THEME"
+  else
+    # No shell theme: GNOME's own chrome, blurred by Blur my Shell.
+    gs_ext "user-theme@gnome-shell-extensions.gcampax.github.com" \
+      org.gnome.shell.extensions.user-theme name ""
+  fi
 
   # Dash to Dock / Ubuntu Dock: pin to a display by connector name (HDMI-1 is
-  # the external monitor; the laptop panel is eDP-1) and make clicks behave
-  # like the macOS Dock. `preferred-monitor -2` means "use the connector".
+  # the external monitor; the laptop panel is eDP-1). `preferred-monitor -2`
+  # means "use the connector".
   for kv in "dock-position BOTTOM" "extend-height false" "autohide true" \
             "dash-max-icon-size 42" "show-apps-at-top false" \
             "click-action minimize" "scroll-action switch-workspace" \
@@ -439,17 +531,21 @@ apply() {
   gsettings set "$MEDIA.custom-keybinding:$CK" command 'nautilus'
   gsettings set "$MEDIA.custom-keybinding:$CK" binding '<Super>e'
 
-  # The dock is rounded by the WhiteSur shell theme itself (border-radius on
-  # `.dash-background`); Blur my Shell adds the translucent/blurred backdrop.
+  # Rounded dock corners come from the shell theme (--whitesur); with GNOME's
+  # own theme Blur my Shell supplies the translucent backdrop.
 
-  info "Done. Log out and back in for the shell theme and extensions."
+  info "Done. Log out and back in for the theme and extensions."
 }
 
-# ── 7. GDM login screen (sudo) ─────────────────────────────────
+# ── 8. GDM login screen (sudo, --whitesur only) ────────────────
 install_gdm() {
+  if [[ "$STYLE" != "whitesur" ]]; then
+    warn "The GDM theme is a WhiteSur tweak; run with --whitesur --gdm-only."
+    return 0
+  fi
   if [[ ! -d /usr/share/gdm ]]; then
     warn "GDM does not seem to be installed; skipping the login screen theme."
-    return
+    return 0
   fi
   info "Installing the GDM (login screen) theme..."
   cd "$CACHE/gtk"

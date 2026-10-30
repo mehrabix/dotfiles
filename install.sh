@@ -262,13 +262,12 @@ if [[ "$APPLY_TWEAKS" == true ]]; then
   fi
 fi
 
-# --- 9. macOS-style desktop (optional) ---------------------------------------
+# --- 9. Desktop theme (optional) ---------------------------------------------
 # Themes, icons, cursors, SF Pro, GNOME extensions and the shell theme live
 # outside ~ (or in dconf), so they get their own script. Reversible and
-# idempotent; `--with-sudo` also installs the theme build deps and the GDM
-# login screen.
-if [[ -x "$DOTFILES_DIR/macos-desktop/setup.sh" ]]; then
-  info "macOS-style desktop: run '$DOTFILES_DIR/macos-desktop/setup.sh' (optional)."
+# idempotent; `--with-sudo` also installs the WhiteSur build deps and GDM theme.
+if [[ -x "$DOTFILES_DIR/dracula-desktop/setup.sh" ]]; then
+  info "GNOME glass theme: run '$DOTFILES_DIR/dracula-desktop/setup.sh' (optional)."
 fi
 
 info "Done. Open a new shell to pick everything up."
