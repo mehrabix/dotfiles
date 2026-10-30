@@ -130,6 +130,19 @@ install_look() {
     info "GTK theme already installed."
   fi
 
+  # GTK4/libadwaita apps ignore the GTK theme setting and read
+  # ~/.config/gtk-4.0/gtk.css instead. Link the theme's CSS + assets there so
+  # Nautilus, Settings, etc. get the same look and translucency.
+  local g4="$HOME/.config/gtk-4.0"
+  mkdir -p "$g4"
+  rm -f "$g4/gtk.css" "$g4/gtk-dark.css"
+  ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/gtk-dark.css" "$g4/gtk.css"
+  ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/gtk-dark.css" "$g4/gtk-dark.css"
+  for d in assets windows-assets; do
+    [[ -e "$g4/$d" && ! -L "$g4/$d" ]] && rm -rf "$g4/$d"
+    ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/$d" "$g4/$d"
+  done
+
   if [[ ! -d "$ICONS/$ICON_THEME" ]]; then
     info "Installing the WhiteSur icon theme..."
     TERM="${TERM:-xterm-256color}" bash icon/install.sh -d "$ICONS" -t default -a
@@ -313,7 +326,7 @@ apply_transparency() {
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications enable-all true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications static-blur true
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications opacity 200
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications opacity 180
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur-on-overview false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications unblur-when-fullscreen true
@@ -332,7 +345,7 @@ apply_transparency() {
         | grep -oE '[0-9a-f]{16,}' | head -1)"
     fi
     if [[ -n "$uuid" ]]; then
-      gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${uuid}/" opacity 0.9 2>/dev/null || true
+      gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${uuid}/" opacity 0.85 2>/dev/null || true
     fi
   fi
 

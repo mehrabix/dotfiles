@@ -64,10 +64,12 @@ backdrop blur like Hyprland's `blur` rule. The closest equivalent is **Blur my
 Shell**: the panel, dash, popups, Overview and app folders get a real blurred
 backdrop, and its `applications` component makes every window translucent over
 the blurred desktop, with rounded corners. Ptyxis gets its own background
-opacity (0.9).
+opacity (0.85).
 
 That is applied by default. `--solid` switches back to the plain
-`WhiteSur-Dark-solid-*` theme and skips the Blur my Shell settings. Qt apps
+`WhiteSur-Dark-solid-*` theme and skips the Blur my Shell settings. GTK4 /
+libadwaita apps get the same theme (and translucency) through
+`~/.config/gtk-4.0`, which the script links to the WhiteSur CSS. Qt apps
 (Zed, etc.) stay opaque unless a Qt style such as Kvantum is installed.
 
 Extensions are only loaded at login — Wayland cannot restart GNOME Shell in

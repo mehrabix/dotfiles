@@ -193,7 +193,7 @@ if command -v ptyxis >/dev/null 2>&1 && gsettings list-schemas 2>/dev/null | gre
     gsettings set "$profile" palette 'macOS' 2>/dev/null || true
     gsettings set "$profile" login-shell true 2>/dev/null || true
     gsettings set "$profile" bold-is-bright true 2>/dev/null || true
-    gsettings set "$profile" opacity 0.9 2>/dev/null || true
+    gsettings set "$profile" opacity 0.85 2>/dev/null || true
   else
     warn "Ptyxis has no profile yet; launch it once and re-run for the palette."
   fi
