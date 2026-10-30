@@ -242,8 +242,8 @@ else.
 ### Asphalt Legends
 
 DX12 through VKD3D-Proton, which is 70–100 % slower than native DX12 on GCN 4.
-`-dx11` (add it after `%command%`) can help but crashes on some updates. Only
-install 32-bit Vulkan if a game is actually 32-bit:
+`-dx11` (add it after `%command%`) can help but crashes on some updates.
+`install.sh` already installs the 32-bit Vulkan/GameMode stack on Arch; by hand:
 
 ```sh
 sudo pacman -S --needed lib32-vulkan-radeon lib32-vulkan-intel lib32-gamemode lib32-mangohud
