@@ -1,0 +1,12 @@
+[Default Applications]
+text/html=google-chrome.desktop
+x-scheme-handler/http=google-chrome.desktop
+x-scheme-handler/https=google-chrome.desktop
+x-scheme-handler/about=google-chrome.desktop
+x-scheme-handler/unknown=google-chrome.desktop
+x-scheme-handler/opencode=ai.opencode.desktop.desktop
+inode/directory=org.gnome.Nautilus.desktop
+video/mp2t=vlc.desktop
+
+[Added Associations]
+video/mp2t=vlc.desktop;

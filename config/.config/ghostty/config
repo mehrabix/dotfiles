@@ -1,0 +1,7 @@
+# Your ghostty config. Seeded once and never overwritten, so
+# anything you add here survives updates.
+#
+# colour overrides belong in user.conf, which loads last and wins.
+
+# your overrides; never shipped, loads last. ? = optional, no error if absent
+config-file = ?user.conf

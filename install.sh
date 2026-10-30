@@ -1,35 +1,44 @@
 #!/usr/bin/env bash
 #
-# Restore dotfiles on a fresh machine.
+# Restore this whole machine from the repo in one run: packages, every
+# dotfile (stowed), Oh My Zsh + plugins, GNOME/dconf settings, the Dracula glass
+# theme and the system tweaks.
 #
 #   git clone https://github.com/mehrabix/dotfiles.git ~/.dotfiles
 #   ~/.dotfiles/install.sh
 #
-# Idempotent: safe to re-run to pick up new changes.
+# Idempotent: safe to re-run to pick up new changes. To capture changes made on
+# this machine back into the repo, run ./sync.sh first.
 #
 # Options:
 #   --no-packages   don't install zsh/tmux/nvim/... (assume they are present)
 #   --no-shell      leave the login shell alone
 #   --no-tweaks     skip the system tweaks (plymouth, swappiness, cups, sudo)
+#   --no-dconf      don't import the GNOME/dconf settings
+#   --no-desktop    don't install the Dracula theme/icons/cursor/extensions
 #   --help
 
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(zsh nvim tmux bash git ptyxis)
+PACKAGES=(bash config git nvim ptyxis tmux zsh)
 OMZ_DIR="$HOME/.oh-my-zsh"
 OMZ_CUSTOM="$OMZ_DIR/custom"
 
 INSTALL_PACKAGES=true
 SET_SHELL=true
 APPLY_TWEAKS=true
+IMPORT_DCONF=true
+INSTALL_DESKTOP=true
 
 for arg in "$@"; do
   case "$arg" in
     --no-packages) INSTALL_PACKAGES=false ;;
     --no-shell)    SET_SHELL=false ;;
     --no-tweaks)   APPLY_TWEAKS=false ;;
-    --help)        sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --no-dconf)    IMPORT_DCONF=false ;;
+    --no-desktop)  INSTALL_DESKTOP=false ;;
+    --help)        sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) printf 'unknown option: %s\n' "$arg" >&2; exit 2 ;;
   esac
 done
@@ -67,7 +76,7 @@ install_packages() {
 # p7zip, github-cli vs gh, ...).
 if [[ "$INSTALL_PACKAGES" == true ]]; then
   missing=()
-  for tool in stow zsh tmux nvim fzf rg node npm gh wl-copy ptyxis; do
+  for tool in stow zsh tmux nvim fzf rg node npm gh wl-copy ptyxis dconf curl unzip gjs python3; do
     command -v "$tool" >/dev/null 2>&1 || missing+=("$tool")
   done
   # Needed to build Treesitter parsers on first Neovim launch.
@@ -82,11 +91,12 @@ if [[ "$INSTALL_PACKAGES" == true ]]; then
       pacman)
         install_packages stow zsh tmux neovim fzf fd nodejs npm ripgrep \
           github-cli wl-clipboard lesspipe bash-completion ptyxis make \
-          tree-sitter-cli
+          tree-sitter-cli dconf curl tar unzip gjs glib2 python
         ;;
       apt-get)
         install_packages stow zsh tmux neovim fzf fd-find nodejs npm ripgrep \
-          gh wl-clipboard lesspipe bash-completion make
+          gh wl-clipboard lesspipe bash-completion make \
+          dconf-cli curl tar unzip gjs libglib2.0-bin python3
         # Needed for Treesitter; not packaged on every release.
         run_root apt-get install -y tree-sitter-cli >/dev/null 2>&1 \
           || warn "tree-sitter-cli is not packaged here; install it from npm (npm i -g tree-sitter-cli)."
@@ -96,7 +106,8 @@ if [[ "$INSTALL_PACKAGES" == true ]]; then
         ;;
       dnf)
         install_packages stow zsh tmux neovim fzf fd-find nodejs npm ripgrep \
-          gh wl-clipboard lesspipe bash-completion make
+          gh wl-clipboard lesspipe bash-completion make \
+          dconf curl tar unzip gjs glib2 python3
         run_root dnf install -y tree-sitter-cli >/dev/null 2>&1 \
           || warn "tree-sitter-cli is not packaged here; install it from npm (npm i -g tree-sitter-cli)."
         ;;
@@ -154,7 +165,33 @@ if ! stow --target="$HOME" --restow "${PACKAGES[@]}"; then
   die "stow hit a conflict. Move the offending file aside and re-run."
 fi
 
-# --- 5. Login shell ----------------------------------------------------------
+# --- 5. GNOME settings -------------------------------------------------------
+# dconf is not a file, so it cannot be stowed: replay the dump captured by
+# sync.sh. Extensions/theme keys land even when their schema is not installed
+# yet; they take effect once the desktop step or a login loads them.
+if [[ "$IMPORT_DCONF" == true ]] && command -v dconf >/dev/null 2>&1; then
+  if [[ -s "$DOTFILES_DIR/dconf/gnome.ini" ]]; then
+    info "Restoring GNOME settings from dconf/gnome.ini..."
+    dconf load /org/gnome/ < "$DOTFILES_DIR/dconf/gnome.ini"
+  else
+    warn "dconf/gnome.ini is empty; keeping the current GNOME settings."
+  fi
+fi
+
+# --- 6. Desktop look ---------------------------------------------------------
+# Theme, icons, cursor, fonts, wallpapers, extensions and the power menu. The
+# script is user-level; it only needs sudo for --with-sudo (GDM) and --gdm-only.
+if [[ "$INSTALL_DESKTOP" == true ]]; then
+  if [[ -x "$DOTFILES_DIR/dracula-desktop/setup.sh" ]]; then
+    info "Installing the desktop look (Dracula + glass)..."
+    "$DOTFILES_DIR/dracula-desktop/setup.sh" \
+      || warn "The desktop setup did not finish; re-run it by hand for details."
+  else
+    warn "dracula-desktop/setup.sh is missing; skipping the desktop look."
+  fi
+fi
+
+# --- 7. Login shell ----------------------------------------------------------
 if [[ "$SET_SHELL" == true ]] && command -v zsh >/dev/null 2>&1; then
   zsh_path="$(command -v zsh)"
   current_shell="$(getent passwd "${USER}" | cut -d: -f7 || true)"
@@ -167,7 +204,7 @@ if [[ "$SET_SHELL" == true ]] && command -v zsh >/dev/null 2>&1; then
   fi
 fi
 
-# --- 6. Terminal (Ptyxis) ----------------------------------------------------
+# --- 8. Terminal (Ptyxis) ----------------------------------------------------
 # The palette lives in the stow package; these settings live in dconf, so they
 # cannot be symlinked and must be applied with gsettings. Values mirror macOS
 # Terminal: login shell, bold-is-bright, block cursor.
@@ -208,7 +245,7 @@ else
   warn "Ptyxis not installed; skipping the terminal theme."
 fi
 
-# --- 7. Editor prerequisites -------------------------------------------------
+# --- 9. Editor prerequisites -------------------------------------------------
 # The first `nvim` launch installs lazy.nvim plugins, Treesitter parsers and
 # Mason tools; that needs a network connection and these tools on PATH. Missing
 # ones only warn -- the editor still opens.
@@ -222,7 +259,7 @@ if ((${#missing[@]})); then
   warn "tree-sitter builds the Treesitter parsers on first launch."
 fi
 
-# --- 8. System tweaks --------------------------------------------------------
+# --- 10. System tweaks --------------------------------------------------------
 unit_exists()      { systemctl list-unit-files --no-legend "$1" 2>/dev/null | grep . >/dev/null; }
 user_unit_exists() { systemctl --user list-unit-files --no-legend "$1" 2>/dev/null | grep . >/dev/null; }
 
@@ -260,14 +297,6 @@ if [[ "$APPLY_TWEAKS" == true ]]; then
     printf 'Defaults !pwfeedback\n' | run_root tee /etc/sudoers.d/0pwfeedback >/dev/null
     run_root chmod 0440 /etc/sudoers.d/0pwfeedback
   fi
-fi
-
-# --- 9. Desktop theme (optional) ---------------------------------------------
-# Themes, icons, cursors, SF Pro, GNOME extensions and the shell theme live
-# outside ~ (or in dconf), so they get their own script. Reversible and
-# idempotent; `--with-sudo` also installs the WhiteSur build deps and GDM theme.
-if [[ -x "$DOTFILES_DIR/dracula-desktop/setup.sh" ]]; then
-  info "GNOME glass theme: run '$DOTFILES_DIR/dracula-desktop/setup.sh' (optional)."
 fi
 
 info "Done. Open a new shell to pick everything up."

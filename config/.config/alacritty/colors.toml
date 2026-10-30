@@ -1,0 +1,67 @@
+# Dracula palette for Alacritty.
+
+[colors.primary]
+background = '#0f1417'
+foreground = '#dfe3e7'
+
+[colors.cursor]
+text = '#0f1417'
+cursor = '#dfe3e7'
+
+[colors.vi_mode_cursor]
+text = '#0f1417'
+cursor = '#8ccff0'
+
+[colors.selection]
+text = '#0f1417'
+background = '#8ccff0'
+
+[colors.search.matches]
+foreground = '#0f1417'
+background = '#c7c2ea'
+
+[colors.search.focused_match]
+foreground = '#0f1417'
+background = '#8ccff0'
+
+[colors.footer_bar]
+foreground = '#dfe3e7'
+background = '#1b2023'
+
+[colors.hints.start]
+foreground = '#0f1417'
+background = '#c7c2ea'
+
+[colors.hints.end]
+foreground = '#0f1417'
+background = '#c7c2ea'
+
+[colors.normal]
+black = '#0f1417'
+red = '#ffb4ab'
+green = '#8ccff0'
+yellow = '#c7c2ea'
+blue = '#b4cad6'
+magenta = '#8ccff0'
+cyan = '#c7c2ea'
+white = '#dfe3e7'
+
+[colors.bright]
+black = '#8a9297'
+red = '#ffb4ab'
+green = '#8ccff0'
+yellow = '#c7c2ea'
+blue = '#b4cad6'
+magenta = '#8ccff0'
+cyan = '#8a9297'
+white = '#bee9ff'
+
+[colors.dim]
+black = '#0f1417'
+red = '#ffb4ab'
+green = '#8ccff0'
+yellow = '#c7c2ea'
+blue = '#b4cad6'
+magenta = '#8ccff0'
+cyan = '#c7c2ea'
+white = '#dfe3e7'

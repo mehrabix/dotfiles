@@ -6,15 +6,20 @@ My Linux dotfiles (Arch and Debian/Ubuntu), managed with [GNU Stow](https://www.
 
 | Package | Links into `$HOME` | Description |
 | ------- | ------------------ | ----------- |
-| `zsh`   | `.zshrc`, `.p10k.zsh` | Zsh + Oh My Zsh with the `robbyrussell` (macOS-style) arrow prompt |
+| `zsh`   | `.zshrc`, `.p10k.zsh` | Zsh + Oh My Zsh with the `robbyrussell` arrow prompt |
 | `bash`  | `.bashrc`, `.bash_profile`, `.profile` | Bash fallback shell |
 | `git`   | `.gitconfig` | Git config (credentials via `gh`) |
 | `tmux`  | `.tmux.conf`, `.local/bin/tmux-sessionizer` | Tmux configuration (prefix `C-b`, vim-style pane switching, sessionizer) |
-| `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | macOS terminal palette (`macOS`); `install.sh` also sets login-shell, bold-is-bright, a block cursor, SF Mono and background opacity |
+| `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | Terminal palette; `install.sh` also sets login-shell, bold-is-bright, a block cursor, SF Mono and background opacity |
 | `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) |
+| `config` | `.config/*`, `.npmrc`, `.local/bin` | Terminal, app and desktop config: alacritty/ghostty/kitty/fish/starship, btop/cava/fastfetch/neofetch/yazi/zathura, VLC, Vesktop/Equibop, GTK/KDE/Qt, monitors, wallpapers, systemd user units, WirePlumber Bluetooth codecs |
 
 `dracula-desktop/` is not a Stow package (nothing in it links into `$HOME`); it
-is the optional desktop theming script described below.
+is the desktop theming script described below.
+
+`dconf/gnome.ini` is the captured desktop settings (theme, extensions,
+keybindings, monitor layout). It cannot be stowed, so `install.sh` replays it
+with `dconf load`.
 
 `~/dotfiles/install.sh` also installs Oh My Zsh and the custom plugins/theme the
 zsh config depends on. Those live in `~/.oh-my-zsh` and are **not** versioned
@@ -27,15 +32,36 @@ git clone https://github.com/mehrabix/dotfiles.git ~/.dotfiles
 ~/.dotfiles/install.sh
 ```
 
-The installer is idempotent — re-run it any time to relink after changes.
-Use `--no-packages`, `--no-shell` or `--no-tweaks` to skip a stage.
+That one command restores everything: packages, Oh My Zsh + plugins, every
+stowed config, the GNOME/dconf settings, the Dracula glass theme (icons, cursor,
+fonts, extensions, power menu) and the system tweaks. Log out and back in
+afterwards so GNOME loads the extensions.
+
+The installer is idempotent — re-run it any time to pick up new commits.
+Use `--no-packages`, `--no-shell`, `--no-tweaks`, `--no-dconf` or
+`--no-desktop` to skip a stage.
+
+### Syncing changes back
+
+The repo is the source of truth. After editing a config on this machine:
+
+```sh
+~/.dotfiles/sync.sh          # copy live config into config/ + dconf/gnome.ini
+cd ~/.dotfiles && git diff   # review
+git add -A && git commit -m "..." && git push
+```
+
+`sync.sh` has the list of managed paths at the top — add a new one there and it
+is captured from then on. Secrets are never copied: browser profiles, keyrings,
+gh tokens, Docker/Kubernetes credentials, SSH/GPG keys, caches, histories and
+session state are excluded.
 
 ## Desktop look (Dracula + glass)
 
 `dracula-desktop/setup.sh` gives GNOME a translucent, purple-tinted look:
 
 - **Dracula GTK** for GTK3 and GTK4/libadwaita apps. It is a colour theme, so
-  window controls stay GNOME's own (symbolic, right side) instead of macOS
+  window controls stay GNOME's own (symbolic, right side) instead of another theme's
   traffic lights.
 - **Tela-circle-dracula** icons and the **Catppuccin Mocha** cursor.
 - GNOME's own shell theme, with the panel, dash and popups blurred by **Blur my
@@ -45,8 +71,10 @@ Use `--no-packages`, `--no-shell` or `--no-tweaks` to skip a stage.
 ```sh
 ~/.dotfiles/dracula-desktop/setup.sh              # Dracula + glass
 ~/.dotfiles/dracula-desktop/setup.sh --solid      # same, no blur/transparency
-~/.dotfiles/dracula-desktop/setup.sh --whitesur   # the old WhiteSur macOS look
+~/.dotfiles/dracula-desktop/setup.sh --whitesur   # the old WhiteSur theme
 ~/.dotfiles/dracula-desktop/setup.sh --with-sudo  # + build deps + GDM login screen
+
+`install.sh` runs the first form for you unless you pass `--no-desktop`.
 ```
 
 The dock is **Dash to Dock** on Arch (`gnome-shell-extension-dash-to-dock`) and
