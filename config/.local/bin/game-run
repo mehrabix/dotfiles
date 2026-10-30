@@ -86,4 +86,10 @@ export DXVK_STATE_CACHE=1
 export VKD3D_SHADER_CACHE_PATH="$cache/vkd3d"
 mkdir -p "$cache/vkd3d" 2>/dev/null || true
 
+# GAME_HUD=1 game-run … draws MangoHud over the game (fps, GPU, frame times),
+# which is the quickest way to confirm the title really is on the Radeon.
+if [[ "${GAME_HUD:-0}" == 1 ]] && command -v mangohud >/dev/null 2>&1; then
+  exec gamemoderun mangohud "$@"
+fi
+
 exec gamemoderun "$@"

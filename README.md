@@ -215,6 +215,8 @@ Games always land on the Samsung 27" (`HDMI-1`, 1920×1080@60):
   update moved it back to the laptop panel (positions are read from `xrandr`,
   so nothing gets reshuffled).
 - `GAME_MONITOR=DP-1 game-run …` targets a different output by hand.
+- `GAME_HUD=1 game-run …` overlays MangoHud (fps, GPU, frame times) — the
+  quickest way to confirm a game really renders on the Radeon.
 
 The laptop panel stays on as the second screen: Samsung at 0–1920, eDP-1 at
 1920–3840.
