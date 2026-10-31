@@ -92,12 +92,13 @@ for the file manager.
 
 ### Transparency
 
-GNOME cannot blur the windows *behind* another window — Mutter has no per-window
-backdrop blur like Hyprland's `blur` rule. The closest equivalent is **Blur my
-Shell**: the panel, dash, popups, Overview and app folders get a real blurred
-backdrop, and its `applications` component makes every window translucent over
-the blurred desktop. App opacity is 180/255; Ptyxis gets its own background
-opacity (0.85).
+The look is macOS-style, not full glass: window content stays essentially opaque
+and only the chrome is translucent. GNOME cannot blur the windows *behind*
+another window — Mutter has no per-window backdrop blur — so the effect comes
+from **Blur my Shell**: the panel, dash, popups, Overview and app folders get a
+real blurred backdrop, and its `applications` component adds a faint frost
+behind windows (opacity 235/255 ≈ 92 %, blur sigma 18). Ptyxis keeps its own
+background at 0.92.
 
 Corner rounding is left to the GTK theme. Blur my Shell clipping windows at a
 different radius drew a second arc over the theme's rounded corners, so its own

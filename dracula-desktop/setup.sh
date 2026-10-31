@@ -371,11 +371,11 @@ gs_ext() {
   fi
 }
 
-# ── 5. Hyprland-style translucency ─────────────────────────────
-# Blur my Shell blurs the shell (panel/dash/overview/popups) and, through its
-# "applications" component, makes every window translucent over a blurred
-# backdrop. This is as close to Hyprland as GNOME gets: Mutter cannot blur the
-# windows *behind* another window, so the blur comes from the desktop below.
+# ── 5. macOS-style translucency ────────────────────────────────
+# Blur my Shell blurs the shell (panel/dash/overview/popups), like the macOS
+# menu bar, and gives application windows a faint frost over the desktop.
+# Windows stay almost opaque (235/255 ≈ 92 %): the desktop must not show
+# through the whole UI, only the chrome is noticeably translucent.
 apply_transparency() {
   [[ "$SOLID" == true ]] && return 0
 
@@ -401,14 +401,16 @@ apply_transparency() {
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.lockscreen blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.window-list blur true
 
-  # Every application window: translucent over the blurred desktop. opacity is
-  # 25-255 (higher = more legible). Corner rounding is left to the GTK theme:
-  # Blur my Shell clipping at a different radius drew a second arc on top of
-  # the theme's rounded corners (rounded-corners 3 = do not round).
+  # Every application window: barely translucent over a soft blurred desktop,
+  # the way macOS keeps window content opaque and only vibrancy on the edges.
+  # opacity is 25-255 (higher = more legible). Corner rounding is left to the GTK
+  # theme: Blur my Shell clipping at a different radius drew a second arc on top
+  # of the theme's rounded corners (rounded-corners 3 = do not round).
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications enable-all true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications static-blur true
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications opacity 180
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications opacity 235
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications sigma 18
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur-on-overview false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications unblur-when-fullscreen true
@@ -427,7 +429,7 @@ apply_transparency() {
         | grep -oE '[0-9a-f]{16,}' | head -1)"
     fi
     if [[ -n "$uuid" ]]; then
-      gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${uuid}/" opacity 0.85 2>/dev/null || true
+      gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${uuid}/" opacity 0.92 2>/dev/null || true
     fi
   fi
 
