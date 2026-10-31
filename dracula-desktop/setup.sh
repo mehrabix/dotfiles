@@ -373,9 +373,9 @@ gs_ext() {
 
 # ── 5. macOS-style translucency ────────────────────────────────
 # Blur my Shell blurs the shell (panel/dash/overview/popups), like the macOS
-# menu bar, and gives application windows a faint frost over the desktop.
-# Windows stay almost opaque (235/255 ≈ 92 %): the desktop must not show
-# through the whole UI, only the chrome is noticeably translucent.
+# menu bar, and gives application windows a barely-there frost.
+# Windows are effectively opaque (250/255 ≈ 98 %): the desktop must not show
+# through the UI, only the chrome carries the translucent tint.
 apply_transparency() {
   [[ "$SOLID" == true ]] && return 0
 
@@ -385,32 +385,34 @@ apply_transparency() {
     return 0
   fi
 
-  info "Enabling Hyprland-style transparency (Blur my Shell)..."
-  # Shell chrome: transparent background over the blur.
+  info "Enabling macOS-style translucency (Blur my Shell)..."
+  # Shell chrome: blurred backdrop under a dark tint (0 = no tint, 2 = dark),
+  # so the panel, dock and menus read as solid surfaces like macOS.
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.panel blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.panel static-blur true
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.panel style-panel 0
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.panel style-panel 2
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.dash-to-dock blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.dash-to-dock static-blur true
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 0
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 2
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.popup blur true
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.popup style-popup 0
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.popup style-popup 2
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.overview blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.appfolder blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.lockscreen blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.window-list blur true
 
-  # Every application window: barely translucent over a soft blurred desktop,
-  # the way macOS keeps window content opaque and only vibrancy on the edges.
-  # opacity is 25-255 (higher = more legible). Corner rounding is left to the GTK
+  # Every application window: effectively opaque over a very soft blurred
+  # backdrop, the way macOS keeps window content opaque and only adds vibrancy
+  # to the chrome. opacity is 25-255 (higher = more legible); at 250 the desktop
+  # is no longer visible through a window. Corner rounding is left to the GTK
   # theme: Blur my Shell clipping at a different radius drew a second arc on top
   # of the theme's rounded corners (rounded-corners 3 = do not round).
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications enable-all true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications static-blur true
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications opacity 235
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications sigma 18
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications opacity 250
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications sigma 12
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur-on-overview false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications unblur-when-fullscreen true
@@ -429,7 +431,7 @@ apply_transparency() {
         | grep -oE '[0-9a-f]{16,}' | head -1)"
     fi
     if [[ -n "$uuid" ]]; then
-      gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${uuid}/" opacity 0.92 2>/dev/null || true
+      gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${uuid}/" opacity 0.95 2>/dev/null || true
     fi
   fi
 
