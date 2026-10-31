@@ -11,7 +11,7 @@ My Linux dotfiles (Arch and Debian/Ubuntu), managed with [GNU Stow](https://www.
 | `git`   | `.gitconfig` | Git config (credentials via `gh`) |
 | `tmux`  | `.tmux.conf`, `.local/bin/tmux-sessionizer` | Tmux configuration (prefix `C-b`, vim-style pane switching, sessionizer) |
 | `ptyxis` | `.local/share/org.gnome.Ptyxis/palettes` | Terminal palette; `install.sh` also sets login-shell, bold-is-bright, a block cursor, SF Mono and background opacity |
-| `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) |
+| `nvim`  | `.config/nvim` | Neovim + [lazy.nvim](https://github.com/folke/lazy.nvim), Primeagen-style config (leader `space`, `<leader>pv` explorer) with a local `colorless` colourscheme built from the desktop palette |
 | `config` | `.config/*`, `.npmrc`, `.local/bin` | Terminal, app and desktop config: alacritty/ghostty/kitty/fish/starship, btop/cava/fastfetch/neofetch/yazi/zathura, VLC, Vesktop/Equibop, GTK/KDE/Qt, monitors, wallpapers, systemd user units, WirePlumber Bluetooth codecs |
 
 `dracula-desktop/` is not a Stow package (nothing in it links into `$HOME`); it
@@ -60,9 +60,17 @@ session state are excluded.
 
 `dracula-desktop/setup.sh` gives GNOME a translucent, purple-tinted look:
 
-- **Dracula GTK** for GTK3 and GTK4/libadwaita apps. It is a colour theme, so
-  window controls stay GNOME's own (symbolic, right side) instead of another theme's
-  traffic lights.
+- **Dracula GTK** for GTK3 and GTK4/libadwaita apps. Dracula by itself paints
+  macOS traffic lights (hides the symbolic icon and draws coloured PNGs), so
+  `gtk/gtk-4.0.css` and `gtk/gtk-3.0.css` in this repo undo that: the
+  titlebuttons become GNOME's own symbolic glyphs on the right, and every
+  window gets one 15 px round corner (the libadwaita `--window-radius`) with a
+  soft shadow instead of Dracula's 4 px top-only radius plus hard black
+  outline — that mismatch was the box drawn around every window.
+  `setup.sh` generates `~/.config/gtk-4.0/gtk.css` from the template (it
+  imports the installed theme, then applies the overrides) and copies the GTK3
+  overrides to `~/.config/gtk-3.0/gtk.css`. GTK4/libadwaita ignores
+  `gtk-theme`, GTK3 does not, so GTK3 only needs the overrides.
 - **Tela-circle-dracula** icons and the **Catppuccin Mocha** cursor.
 - GNOME's own shell theme, with the panel, dash and popups blurred by **Blur my
   Shell** — no WhiteSur shell theme and no dock rounding hacks.
@@ -101,17 +109,36 @@ backdrop under a dark tint (`style … 2`, not fully transparent), and its
 250/255 ≈ 98 %, blur sigma 12 — the desktop is not visible through a window).
 Ptyxis keeps its own background at 0.95.
 
-Corner rounding is left to the GTK theme. Blur my Shell clipping windows at a
-different radius drew a second arc over the theme's rounded corners, so its own
-rounding is disabled (`rounded-corners 3`).
+Corner rounding is deliberately uniform: Blur my Shell clips application
+windows at the same 15 px radius the GTK stylesheet uses (`rounded-corners 0`,
+`corner-radius 15`). Clipping at a different radius, or not clipping at all,
+leaves the square blur layer peeking out behind the rounded window, which also
+reads as a boxed edge.
 
 `--solid` skips the Blur my Shell settings entirely. GTK4 / libadwaita apps get
-the same theme through `~/.config/gtk-4.0` (and `~/.config/assets` for
-Dracula's CSS). Qt apps (Zed, etc.) stay opaque unless a Qt style such as
-Kvantum is installed.
+the same theme and window fixes through the generated
+`~/.config/gtk-4.0/gtk.css` (and `~/.config/assets` for Dracula's CSS). Qt apps
+(Zed, etc.) stay opaque unless a Qt style such as Kvantum is installed.
 
 Extensions are only loaded at login — Wayland cannot restart GNOME Shell in
 place, so log out and back in after running the script.
+
+### Neovim colours (`colorless`)
+
+Neovim does not use a downloaded colourscheme. `nvim/.config/nvim` vendors the
+same muted blue/grey palette the rest of the machine uses (kitty/alacritty,
+yazi, cava, zathura, KDE) in `lua/theprimeagen/palette.lua`, and
+`lua/theprimeagen/colors/colorless.lua` builds the highlight groups from it:
+
+- one slate background (`#0f1417`), soft ink text, no bright rainbow syntax —
+  colour is kept for the cyan accent, keywords, strings and diagnostics;
+- terminal colours match the kitty theme exactly (also used by `:terminal`);
+- lualine uses a matching custom theme, and Telescope / neo-tree / bufferline /
+  cmp / which-key / trouble / dap are all themed from the same palette;
+- the scheme is applied on startup and re-applied on `User VeryLazy` so plugins
+  loading late cannot overwrite it. `:colorscheme colorless` also works.
+
+To change it, edit `palette.lua`; the whole UI follows.
 
 ### Power menu (Log Out + Hibernate)
 

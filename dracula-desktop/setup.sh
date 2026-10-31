@@ -24,6 +24,7 @@ STYLE="dracula"
 SOLID=false
 WITH_SUDO=false
 GDM_ONLY=false
+SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 for arg in "$@"; do
   case "$arg" in
@@ -214,11 +215,14 @@ install_dracula() {
 }
 
 # GTK4/libadwaita apps ignore the GTK theme setting and read
-# ~/.config/gtk-4.0/gtk.css instead. Link the active theme's CSS there so
-# Nautilus, Settings, etc. get the same colours and translucency.
+# ~/.config/gtk-4.0/gtk.css instead. Write a real file that imports the active
+# theme and then applies the local window-chrome fixes (native titlebuttons,
+# one 15px window radius). GTK3 uses the theme normally, so it only needs the
+# small override stylesheet in ~/.config/gtk-3.0/gtk.css.
 link_gtk4() {
   local g4="$HOME/.config/gtk-4.0"
-  mkdir -p "$g4"
+  local g3="$HOME/.config/gtk-3.0"
+  mkdir -p "$g4" "$g3"
   rm -f "$g4/gtk.css" "$g4/gtk-dark.css" "$g4/assets" "$g4/windows-assets"
 
   if [[ "$STYLE" == "whitesur" ]]; then
@@ -228,10 +232,15 @@ link_gtk4() {
       ln -sfn "$THEMES/$GTK_THEME/gtk-4.0/$d" "$g4/$d"
     done
   else
-    ln -sfn "$THEMES/Dracula/gtk-4.0/gtk-dark.css" "$g4/gtk.css"
-    ln -sfn "$THEMES/Dracula/gtk-4.0/gtk-dark.css" "$g4/gtk-dark.css"
-    # Dracula's gtk-4.0 CSS refers to ../assets, i.e. ~/.config/assets.
-    ln -sfn "$THEMES/Dracula/assets" "$HOME/.config/assets"
+    # The @THEME_DIR@ token keeps the stylesheet free of $HOME assumptions
+    # while still letting the imported theme resolve its ../assets paths.
+    sed "s|@THEME_DIR@|$THEMES/$GTK_THEME|g" \
+      "$SETUP_DIR/gtk/gtk-4.0.css" >"$g4/gtk.css"
+    cp "$g4/gtk.css" "$g4/gtk-dark.css"
+    cp "$SETUP_DIR/gtk/gtk-3.0.css" "$g3/gtk.css"
+    # Dracula's gtk-4.0 CSS refers to ../assets; keep the legacy symlink for
+    # anything that still resolves it from the user config directory.
+    ln -sfn "$THEMES/$GTK_THEME/assets" "$HOME/.config/assets"
   fi
 }
 
@@ -405,9 +414,10 @@ apply_transparency() {
   # Every application window: effectively opaque over a very soft blurred
   # backdrop, the way macOS keeps window content opaque and only adds vibrancy
   # to the chrome. opacity is 25-255 (higher = more legible); at 250 the desktop
-  # is no longer visible through a window. Corner rounding is left to the GTK
-  # theme: Blur my Shell clipping at a different radius drew a second arc on top
-  # of the theme's rounded corners (rounded-corners 3 = do not round).
+  # is no longer visible through a window. Clip the blur at the same 15px radius
+  # the GTK stylesheet uses (rounded-corners 0 = all corners): clipping at a
+  # different radius, or not clipping at all, leaves the square blur layer
+  # peeking out behind the rounded window -- the boxed edge.
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications enable-all true
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications static-blur true
@@ -416,8 +426,8 @@ apply_transparency() {
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications blur-on-overview false
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications unblur-when-fullscreen true
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications rounded-corners 3
-  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications corner-radius 12
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications rounded-corners 0
+  gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications corner-radius 15
   gs_ext "$BMS" org.gnome.shell.extensions.blur-my-shell.applications corner-when-maximized false
 
   # Ptyxis has its own background opacity; the other apps get translucency from

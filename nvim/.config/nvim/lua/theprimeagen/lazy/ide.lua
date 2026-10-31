@@ -1,6 +1,8 @@
 -- JetBrains-style UI layer: project tree, tabs, statusline, command hints,
 -- notifications, git gutter, debug panel and an integrated terminal.
 -- Keymaps live next to each plugin so they only exist once the plugin loads.
+local palette = require("theprimeagen.palette")
+
 return {
   ---------------------------------------------------------------------------
   -- Icons (required by the tree, tabs and statusline)
@@ -96,7 +98,7 @@ return {
     event = "VeryLazy",
     opts = {
       options = {
-        theme = "auto",
+        theme = require("theprimeagen.lualine_theme"),
         globalstatus = true,
         section_separators = "",
         component_separators = "|",
@@ -116,7 +118,7 @@ return {
               local ok, navic = pcall(require, "nvim-navic")
               return ok and navic.is_available()
             end,
-            color = { fg = "#7aa2f7" },
+            color = { fg = palette.accent },
           },
         },
         lualine_x = { "encoding", "fileformat", "filetype" },

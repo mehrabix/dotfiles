@@ -8,6 +8,23 @@ local autocmd = vim.api.nvim_create_autocmd
 local ThePrimeagenGroup = augroup("ThePrimeagen", {})
 local yank_group = augroup("HighlightYank", {})
 
+-- The one colourscheme this config uses: the desktop palette, vendored in
+-- lua/theprimeagen/{palette,colors/colorless}.lua. Plugins are free to run
+-- after the initial load, so re-apply once they are all up.
+function ColorMyPencils(color)
+  vim.cmd.colorscheme(color or "colorless")
+end
+
+ColorMyPencils()
+
+autocmd("User", {
+  group = ThePrimeagenGroup,
+  pattern = "VeryLazy",
+  callback = function()
+    ColorMyPencils()
+  end,
+})
+
 -- Reload a lua module from disk (handy while editing the config itself).
 function R(name)
   require("plenary.reload").reload_module(name)
