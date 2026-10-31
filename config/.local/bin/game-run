@@ -6,7 +6,7 @@
 # Steam launch options:   /home/ahmad/.local/bin/game-run %command%
 #
 # What it does:
-#   * puts the game on the external monitor (GNOME primary decides placement)
+#   * puts the game on the external monitor (GNOME primary + SDL display hints)
 #   * wakes the dGPU (it is runtime-suspended; amdgpu saves battery when idle)
 #   * forces DRI_PRIME + the RADV Vulkan ICD, so DXVK/VKD3D/native Vulkan all
 #     land on the dGPU instead of the Intel HD 620
@@ -15,17 +15,31 @@
 #   * hands the process to GameMode (CPU governor, I/O priority, reaper)
 #
 # Environment overrides:
-#   GAME_MONITOR=DP-1    use a different output (default: first external one)
+#   GAME_MONITOR=DP-1      use a different output (default: first external one)
+#   GAME_SINGLE_OUTPUT=1   turn the laptop panel off while the game runs, so the
+#                          game cannot open on it (restored when the game exits)
+#   GAME_HUD=1             draw MangoHud over the game
 #
 set -uo pipefail
 
 DGPU_PCI="pci-0000_01_00_0"
 
+# Layout args for `gdctl set`, rebuilt from the live xrandr state so nothing
+# moves when the configuration is re-applied. Pass a connector to mark primary.
+current_layout() {
+  local want="${1:-}" name geometry rest
+  while read -r name geometry; do
+    rest="${geometry#*+}"
+    printf '%s\0%s\0%s\0%s\0%s\0' \
+      --logical-monitor --monitor "$name" --x "${rest%%+*}" --y "${rest##*+}"
+    [[ "$name" == "$want" ]] && printf '%s\0' --primary
+  done < <(xrandr --query 2>/dev/null | awk '
+    / connected / { for (i = 1; i <= NF; i++) if ($i ~ /^[0-9]+x[0-9]+\+/) { print $1, $i; break } }')
+}
+
 # --- Display ----------------------------------------------------------------
-# GNOME opens new windows on the primary monitor, and both XWayland and Wine
-# use it for fullscreen, so the primary is what decides where a game appears.
-# Pick the target output, then repair the primary flag if something (hotplug,
-# a GNOME update) moved it back to the laptop panel.
+# GNOME opens new windows on the primary monitor, and XWayland/Wine use it for
+# fullscreen, so the primary is what decides where a game appears by default.
 game_monitor="${GAME_MONITOR:-}"
 if [[ -z "$game_monitor" ]]; then
   # xrandr names are the ones gdctl/Steam see (HDMI-1, not the DRM HDMI-A-1);
@@ -39,22 +53,40 @@ fi
 if [[ -n "$game_monitor" ]] && command -v gdctl >/dev/null 2>&1; then
   primary="$(xrandr --query 2>/dev/null | awk '/ connected primary /{print $1; exit}')"
   if [[ -n "$primary" && "$primary" != "$game_monitor" ]]; then
-    # Re-apply the live layout with the game monitor primary; positions come
-    # from xrandr so no window is reshuffled.
     layout=()
-    while read -r name geometry; do
-      rest="${geometry#*+}"
-      layout+=(--logical-monitor --monitor "$name" --x "${rest%%+*}" --y "${rest##*+}")
-      [[ "$name" == "$game_monitor" ]] && layout+=(--primary)
-    done < <(xrandr --query 2>/dev/null | awk '
-      / connected / { for (i = 1; i <= NF; i++) if ($i ~ /^[0-9]+x[0-9]+\+/) { print $1, $i; break } }')
+    mapfile -d '' layout < <(current_layout "$game_monitor")
     if ((${#layout[@]})); then
       gdctl set -P "${layout[@]}" >/dev/null 2>&1 \
         && printf 'game-run: %s is now the primary display\n' "$game_monitor" >&2 \
-        || printf 'game-run: could not make %s primary, game may open on the laptop panel\n' \
-             "$game_monitor" >&2
+        || printf 'game-run: warning: could not make %s primary\n' "$game_monitor" >&2
     fi
   fi
+fi
+
+# SDL3 (CS2, most native Linux games) numbers displays from XRandR and lets the
+# game pick one by index; SDL2 and sdl2-compat read the same index hint.
+sdl_index="$(xrandr --listmonitors 2>/dev/null |
+  awk -v want="$game_monitor" '$NF == want { sub(":", "", $1); print $1; exit }')"
+if [[ -n "$sdl_index" ]]; then
+  export SDL_VIDEO_FULLSCREEN_DISPLAY="$sdl_index"
+  export SDL_VIDEO_DISPLAY_PRIORITY="$sdl_index"
+fi
+
+# Optional: leave the laptop panel off for the whole session. Guarantees the
+# game cannot pick it, at the cost of the second screen while playing.
+restore_display() {
+  ((${#saved_layout[@]})) || return 0
+  gdctl set -P "${saved_layout[@]}" >/dev/null 2>&1 || true
+}
+
+saved_layout=()
+single_output=false
+if [[ "${GAME_SINGLE_OUTPUT:-0}" == 1 && -n "$game_monitor" ]] &&
+   command -v gdctl >/dev/null 2>&1; then
+  mapfile -d '' saved_layout < <(current_layout "$primary")
+  gdctl set -P --logical-monitor --monitor "$game_monitor" --primary --x 0 --y 0 \
+    >/dev/null 2>&1 && single_output=true
+  trap restore_display EXIT INT TERM
 fi
 
 # The dGPU may be power-gated and its render node absent until amdgpu probes.
@@ -86,10 +118,13 @@ export DXVK_STATE_CACHE=1
 export VKD3D_SHADER_CACHE_PATH="$cache/vkd3d"
 mkdir -p "$cache/vkd3d" 2>/dev/null || true
 
-# GAME_HUD=1 game-run … draws MangoHud over the game (fps, GPU, frame times),
-# which is the quickest way to confirm the title really is on the Radeon.
 if [[ "${GAME_HUD:-0}" == 1 ]] && command -v mangohud >/dev/null 2>&1; then
-  exec gamemoderun mangohud "$@"
+  set -- mangohud "$@"
 fi
 
+if [[ "$single_output" == true ]]; then
+  # No exec: the EXIT trap has to bring the laptop panel back.
+  gamemoderun "$@"
+  exit $?
+fi
 exec gamemoderun "$@"
