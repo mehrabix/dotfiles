@@ -108,6 +108,16 @@ alias ping='ping -c 5'
 # Debian/Ubuntu ship fd as `fdfind`; Arch (and Fedora) ship plain `fd`.
 (( $+commands[fdfind] )) && alias fd='fdfind'
 
+# Primeagen-flavoured shortcuts.
+alias vim='nvim'
+alias v='nvim'
+alias gs='git status'
+alias gd='git diff'
+alias gl='git log --oneline --graph --decorate --all'
+alias gp='git push'
+alias gco='git checkout'
+(( $+commands[lazygit] )) && alias lg='lazygit'
+
 # ─────────────────────────────────────────────────────────────
 # Colors (macOS terminal palette)
 # ─────────────────────────────────────────────────────────────
@@ -142,6 +152,9 @@ bindkey '^[[1;5B' history-substring-search-down
 bindkey '^H'   backward-kill-word     # Ctrl+Backspace deletes a word
 bindkey '^[[H' backward-kill-word     # same, for terminals that send this
 
+# Primeagen's signature: Ctrl+F opens the fuzzy project switcher.
+bindkey -s '^f' 'tmux-sessionizer\n'
+
 # ─────────────────────────────────────────────────────────────
 # Bracketed paste
 # ─────────────────────────────────────────────────────────────
@@ -161,6 +174,19 @@ if (( ! $+widgets[bracketed-paste] )); then
   bindkey $'\e\[?2004h' _zsh_bp_noop 2>/dev/null
   bindkey $'\e\[?2004l' _zsh_bp_noop 2>/dev/null
 fi
+
+# ─────────────────────────────────────────────────────────────
+# Editor (ThePrimeagen uses nvim for everything)
+# ─────────────────────────────────────────────────────────────
+export EDITOR=nvim
+export VISUAL=nvim
+export GIT_EDITOR=nvim
+
+# Do NOT export VIM=nvim. Neovim 0.12 treats an exported $VIM as its runtime
+# root and dies with "module 'vim.uri' not found". ThePrimeagen sets it as a
+# shell-local variable only. Clearing it also fixes panes started before this
+# line existed.
+unset VIM
 
 # ─────────────────────────────────────────────────────────────
 # Tooling (nvm, PATH)
@@ -192,8 +218,8 @@ nvm() {
 # ─────────────────────────────────────────────────────────────
 # tmux
 # ─────────────────────────────────────────────────────────────
-# Your normal terminal is left alone on purpose so Tab completion and text
-# selection behave predictably. Start tmux only when you want it.
+# tmux is started automatically for every interactive shell (see the end of
+# this file), so this is only needed if you opted out with NO_TMUX=1.
 t() {
   if [[ -z "$TMUX" ]]; then
     tmux attach-session -t main 2>/dev/null || tmux new-session -s main
@@ -201,3 +227,29 @@ t() {
     echo "Already inside tmux."
   fi
 }
+export LOCALSTACK_AUTH_TOKEN="ls-yAwa2156-jEkE-XiME-hODU-dIFiMiMea88a"
+export AWS_ACCESS_KEY_ID=test
+export AWS_SECRET_ACCESS_KEY=test
+export AWS_DEFAULT_REGION=us-east-1
+export AWS_ENDPOINT_URL=http://localhost:4566
+
+# ─────────────────────────────────────────────────────────────
+# Auto-start tmux (every interactive shell lands inside tmux)
+# ─────────────────────────────────────────────────────────────
+# `new-session -A -s main` attaches to the "main" session if it exists and
+# creates it otherwise, so every terminal shares one session.
+#
+# Escape hatches:
+#   NO_TMUX=1 zsh        start a plain shell (also useful inside nvim :terminal)
+#   TMUX_AUTO_START=0    same, without touching other shells
+if [[ -o interactive ]] \
+  && [[ -z "$TMUX" ]] \
+  && [[ -z "$NVIM" ]] \
+  && [[ -z "$NO_TMUX" ]] \
+  && [[ "$TMUX_AUTO_START" != "0" ]] \
+  && [[ "$TERM" != "dumb" ]] \
+  && [[ -t 0 && -t 1 ]] \
+  && (( $+commands[tmux] )); then
+  exec tmux new-session -A -s main -c "$PWD"
+fi
+
