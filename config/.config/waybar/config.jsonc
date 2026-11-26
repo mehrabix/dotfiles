@@ -1,0 +1,124 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 40,
+  "spacing": 6,
+  "margin-top": 8,
+  "margin-left": 12,
+  "margin-right": 12,
+  "modules-left": ["custom/launcher", "hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["mpris"],
+  "modules-right": ["cpu", "memory", "pulseaudio", "network", "bluetooth", "battery", "custom/notifications", "clock", "tray", "custom/power"],
+
+  "custom/launcher": {
+    "format": "󰣇",
+    "tooltip": false,
+    "on-click": "wofi --show drun",
+    "on-click-right": "wofi --show run"
+  },
+
+  "hyprland/workspaces": {
+    "format": "{id}",
+    "on-click": "activate",
+    "persistent-workspaces": { "*": 5 },
+    "sort-by-number": true,
+    "active-only": false,
+    "all-outputs": true
+  },
+
+  "hyprland/window": {
+    "format": "{title}",
+    "max-length": 64,
+    "separate-outputs": false,
+    "rewrite": {
+      "kitty": "Terminal",
+      "firefox": "Firefox",
+      "code": "VS Code"
+    }
+  },
+
+  "mpris": {
+    "format": "󰎆 {title}",
+    "format-paused": "󰏤 {title}",
+    "format-stopped": "",
+    "max-length": 44,
+    "tooltip-format": "{player} — {title}\n{artist}\n{album}",
+    "on-click": "playerctl play-pause",
+    "on-click-middle": "playerctl previous",
+    "on-click-right": "playerctl next"
+  },
+
+  "cpu": {
+    "format": "󰻠 {usage}%",
+    "interval": 3,
+    "tooltip": false
+  },
+
+  "memory": {
+    "format": "󰍛 {percentage}%",
+    "interval": 5,
+    "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
+  },
+
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰖁",
+    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+    "on-click": "pavucontrol",
+    "on-click-right": "swayosd-client --output-volume mute-toggle",
+    "tooltip-format": "{desc}"
+  },
+
+  "network": {
+    "format-wifi": "󰤨 {essid}",
+    "format-ethernet": "󰈀 {ifname}",
+    "format-disconnected": "󰤭",
+    "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ipaddr}",
+    "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
+    "tooltip-format-disconnected": "Disconnected",
+    "on-click": "gnome-control-center wifi"
+  },
+
+  "bluetooth": {
+    "format": "󰂯",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "tooltip-format": "{controller_alias}\n{num_connections} connected",
+    "on-click": "blueman-manager",
+    "on-click-right": "bluetoothctl power off"
+  },
+
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "states": { "warning": 30, "critical": 15 },
+    "interval": 30,
+    "tooltip-format": "{timeTo} ({capacity}%)"
+  },
+
+  "custom/notifications": {
+    "exec": "/home/ahmad/.config/hypr/scripts/notif-count.sh",
+    "format": "{}",
+    "interval": 3,
+    "tooltip": false,
+    "on-click": "swaync-client -t -sw"
+  },
+
+  "clock": {
+    "format": "󰥔 {:%H:%M}",
+    "tooltip-format": "{:%A, %d %B %Y}",
+    "calendar": { "format": "{:%B %Y}" },
+    "on-click": "gnome-calendar"
+  },
+
+  "tray": {
+    "icon-size": 18,
+    "spacing": 8
+  },
+
+  "custom/power": {
+    "format": "⏻",
+    "tooltip": false,
+    "on-click": "/home/ahmad/.config/hypr/scripts/powermenu.sh"
+  }
+}

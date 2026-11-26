@@ -1,0 +1,180 @@
+/* SWAYNC · Midnight Glass */
+
+@define-color bg      rgba(10, 14, 20, 0.72);
+@define-color surface rgba(255, 255, 255, 0.045);
+@define-color border  rgba(242, 200, 121, 0.18);
+@define-color accent  #f2c879;
+@define-color accent2 #e0705f;
+@define-color text    #e6edf3;
+@define-color muted   #8b98a8;
+@define-color teal    #7fd1c8;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", "Noto Sans", sans-serif;
+    font-size: 13px;
+}
+
+.control-center {
+    background: @bg;
+    border: 1px solid @border;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+    padding: 14px;
+}
+
+.control-center-list {
+    background: transparent;
+}
+
+.control-center-list-placeholder {
+    color: @muted;
+    font-size: 13px;
+}
+
+/* Notification cards */
+.notification-row {
+    padding: 4px 0;
+}
+
+.notification {
+    background: @surface;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 10px;
+    transition: background 180ms ease, border-color 180ms ease;
+}
+
+.notification:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(242, 200, 121, 0.22);
+}
+
+.notification-content {
+    padding: 4px;
+}
+
+.notification-default-action {
+    background: transparent;
+    border-radius: 14px;
+    padding: 4px;
+}
+
+.notification-default-action:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.summary {
+    color: @text;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.body {
+    color: @muted;
+    font-size: 12px;
+}
+
+.time {
+    color: rgba(139, 152, 168, 0.7);
+    font-size: 11px;
+}
+
+.notification-icon {
+    margin-right: 10px;
+}
+
+.close-button {
+    background: rgba(224, 112, 95, 0.14);
+    color: @accent2;
+    border-radius: 10px;
+    margin: 2px;
+    padding: 2px 6px;
+}
+
+.close-button:hover {
+    background: rgba(224, 112, 95, 0.28);
+    color: #ff9a8b;
+}
+
+.notification-action {
+    background: rgba(242, 200, 121, 0.10);
+    color: @accent;
+    border: 1px solid rgba(242, 200, 121, 0.16);
+    border-radius: 10px;
+    padding: 4px 10px;
+    margin: 4px 2px;
+}
+
+.notification-action:hover {
+    background: rgba(242, 200, 121, 0.20);
+}
+
+.critical {
+    border-color: rgba(224, 112, 95, 0.55);
+}
+
+.critical .summary {
+    color: #ff9a8b;
+}
+
+.low {
+    opacity: 0.85;
+}
+
+/* Widgets */
+.widget-title {
+    color: @text;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 4px 4px 10px 4px;
+}
+
+.widget-title > button {
+    background: linear-gradient(135deg, rgba(242, 200, 121, 0.22), rgba(224, 112, 95, 0.16));
+    color: @accent;
+    border: 1px solid rgba(242, 200, 121, 0.22);
+    border-radius: 10px;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.widget-title > button:hover {
+    background: linear-gradient(135deg, rgba(242, 200, 121, 0.34), rgba(224, 112, 95, 0.24));
+}
+
+.widget-dnd {
+    color: @muted;
+    margin: 4px;
+    font-size: 13px;
+}
+
+.widget-dnd > switch {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+}
+
+.widget-dnd > switch:checked {
+    background: linear-gradient(135deg, @accent, @accent2);
+}
+
+.widget-dnd > switch slider {
+    background: #ffffff;
+    border-radius: 10px;
+}
+
+.widget-mpris {
+    background: rgba(127, 209, 200, 0.08);
+    border: 1px solid rgba(127, 209, 200, 0.14);
+    border-radius: 16px;
+    padding: 8px;
+    margin: 6px 0;
+}
+
+.widget-mpris-title {
+    color: @teal;
+    font-weight: 700;
+}
+
+.widget-mpris-subtitle {
+    color: @muted;
+}

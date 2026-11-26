@@ -632,10 +632,53 @@
 # High priority (boolean)
 #sout-transcode-high-priority=0
 
+[stream_out_chromecast] # Chromecast stream output
+
+# ? (string)
+#sout-chromecast-ip=
+
+# ? (integer)
+#sout-chromecast-port=8009
+
+# ? (string)
+#sout-chromecast-device-name=
+
+# ? (boolean)
+#sout-chromecast-video=1
+
+# HTTP port (integer)
+#sout-chromecast-http-port=8010
+
+# Performance warning (integer)
+#sout-chromecast-show-perf-warning=1
+
+# Enable Audio passthrough (boolean)
+#sout-chromecast-audio-passthrough=0
+
+# Conversion quality (integer)
+#sout-chromecast-conversion-quality=1
+
 [ps] # MPEG-PS demuxer
 
 # Trust MPEG timestamps (boolean)
 #ps-trust-timestamps=1
+
+[avformat] # Avformat demuxer
+
+# Format name (string)
+#avformat-format=
+
+# Advanced options (string)
+#avformat-options=
+
+# Avformat mux (string)
+#sout-avformat-mux=
+
+# Advanced options (string)
+#sout-avformat-options=
+
+# Reset timestamps (boolean)
+#sout-avformat-reset-ts=1
 
 [diracsys] # Dirac video demuxer
 
@@ -673,6 +716,47 @@
 
 # Subtitle description (string)
 #sub-description=
+
+[ts] # MPEG Transport Stream demuxer
+
+# Digital TV Standard (string)
+#ts-standard=auto
+
+# Extra PMT (string)
+#ts-extra-pmt=
+
+# Trust in-stream PCR (boolean)
+#ts-trust-pcr=1
+
+# Set id of ES to PID (boolean)
+#ts-es-id-pid=1
+
+# CSA Key (string)
+#ts-csa-ck=
+
+# Second CSA Key (string)
+#ts-csa2-ck=
+
+# Packet size in bytes to decrypt (integer)
+#ts-csa-pkt=188
+
+# Separate sub-streams (boolean)
+#ts-split-es=1
+
+# Seek based on percent not time (boolean)
+#ts-seek-percent=0
+
+# Check packets continuity counter (boolean)
+#ts-cc-check=1
+
+# Only create ES on program sending data (boolean)
+#ts-pmtfix-waitdata=1
+
+# Try to generate PAT/PMT if missing (boolean)
+#ts-patfix=1
+
+# Try to fix too early PCR (or late DTS) (boolean)
+#ts-pcr-offsetfix=1
 
 [adaptive] # Unified adaptive streaming for DASH/HLS
 
@@ -721,6 +805,38 @@
 
 # Hurry up (boolean)
 #rawdv-hurry-up=0
+
+[mod] # MOD demuxer (libmodplug)
+
+# Noise reduction (boolean)
+#mod-noisereduction=1
+
+# Reverb (boolean)
+#mod-reverb=0
+
+# Reverberation level (integer)
+#mod-reverb-level=0
+
+# Reverberation delay (integer)
+#mod-reverb-delay=40
+
+# Mega bass (boolean)
+#mod-megabass=0
+
+# Mega bass level (integer)
+#mod-megabass-level=0
+
+# Mega bass cutoff (integer)
+#mod-megabass-range=10
+
+# Surround (boolean)
+#mod-surround=0
+
+# Surround level (integer)
+#mod-surround-level=0
+
+# Surround delay (ms) (integer)
+#mod-surround-delay=5
 
 [mkv] # Matroska stream demuxer
 
@@ -838,6 +954,11 @@
 # Frame rate (string)
 #timecode-fps=25/1
 
+[dvdread] # DVDRead Input (no menu support)
+
+# DVD angle (integer)
+#dvdread-angle=1
+
 [satip] # SAT>IP Receiver Plugin
 
 # Receive buffer (integer)
@@ -853,6 +974,34 @@
 
 # UDP Source timeout (sec) (integer)
 #udp-timeout=-1
+
+[avio] # libavformat AVIO access
+
+# Advanced options (string)
+#avio-options=
+
+# Advanced options (string)
+#sout-avio-options=
+
+[xcb_screen] # Screen capture (with X11/XCB)
+
+# Frame rate (float)
+#screen-fps=2.000000
+
+# Region left column (integer)
+#screen-left=0
+
+# Region top row (integer)
+#screen-top=0
+
+# Capture region width (integer)
+#screen-width=0
+
+# Capture region height (integer)
+#screen-height=0
+
+# Follow the mouse (boolean)
+#screen-follow-mouse=0
 
 [imem] # Memory input
 
@@ -1014,6 +1163,20 @@
 # Continuous 22kHz tone (integer)
 #dvb-tone=-1
 
+[cdda] # Audio CD input
+
+# Audio CD device (string)
+#cd-audio=/dev/sr0
+
+# Musicbrainz Server (string)
+#musicbrainz-server=musicbrainz.org
+
+# CDDB Server (string)
+#cddb-server=freedb.videolan.org
+
+# CDDB port (integer)
+#cddb-port=80
+
 [access_mms] # Microsoft Media Server (MMS) input
 
 # TCP/UDP timeout (ms) (integer)
@@ -1098,6 +1261,25 @@
 # FTP account (string)
 #ftp-account=anonymous
 
+[linsys_hdsdi] # HD-SDI Input
+
+# Link # (integer)
+#linsys-hdsdi-link=0
+
+# Video ID (integer)
+#linsys-hdsdi-id-video=0
+
+# Aspect ratio (string)
+#linsys-hdsdi-aspect-ratio=
+
+# Audio configuration (string)
+#linsys-hdsdi-audio=0=1,1
+
+[nfs] # NFS input
+
+# Set NFS uid/guid automatically (boolean)
+#nfs-auto-guid=1
+
 [rtp] # Real-Time Protocol (RTP) input
 
 # RTCP (local) port (integer)
@@ -1132,6 +1314,28 @@
 # Frame buffer height (integer)
 #shm-height=480
 
+[libbluray] # Blu-ray Disc support (libbluray)
+
+# Blu-ray menus (boolean)
+#bluray-menu=1
+
+# Region code (string)
+#bluray-region=B
+
+[sftp] # SFTP input
+
+# SFTP port (integer)
+#sftp-port=22
+
+# Username (string)
+#sftp-user=
+
+# Password (string)
+#sftp-pwd=
+
+# Private key file (string)
+#sftp-privatekey=
+
 [vdr] # VDR recordings
 
 # Chapter offset in ms (integer)
@@ -1139,6 +1343,143 @@
 
 # Frame rate (float)
 #vdr-fps=25.000000
+
+[v4l2] # Video4Linux input
+
+# Video capture device (string)
+#v4l2-dev=/dev/video0
+
+# VBI capture device (string)
+#v4l2-vbidev=
+
+# Standard (string)
+#v4l2-standard=
+
+# Video input chroma format (string)
+#v4l2-chroma=
+
+# Input (integer)
+#v4l2-input=0
+
+# Audio input (integer)
+#v4l2-audio-input=-1
+
+# Width (integer)
+#v4l2-width=0
+
+# Height (integer)
+#v4l2-height=0
+
+# Picture aspect-ratio n:m (string)
+#v4l2-aspect-ratio=4:3
+
+# Frame rate (string)
+#v4l2-fps=60
+
+# Radio device (string)
+#v4l2-radio-dev=/dev/radio0
+
+# Frequency (integer)
+#v4l2-tuner-frequency=-1
+
+# Audio mode (integer)
+#v4l2-tuner-audio-mode=3
+
+# Reset controls (boolean)
+#v4l2-controls-reset=0
+
+# Brightness (integer)
+#v4l2-brightness=-1
+
+# Automatic brightness (integer)
+#v4l2-brightness-auto=-1
+
+# Contrast (integer)
+#v4l2-contrast=-1
+
+# Saturation (integer)
+#v4l2-saturation=-1
+
+# Hue (integer)
+#v4l2-hue=-1
+
+# Automatic hue (integer)
+#v4l2-hue-auto=-1
+
+# White balance temperature (K) (integer)
+#v4l2-white-balance-temperature=-1
+
+# Automatic white balance (integer)
+#v4l2-auto-white-balance=-1
+
+# Red balance (integer)
+#v4l2-red-balance=-1
+
+# Blue balance (integer)
+#v4l2-blue-balance=-1
+
+# Gamma (integer)
+#v4l2-gamma=-1
+
+# Automatic gain (integer)
+#v4l2-autogain=-1
+
+# Gain (integer)
+#v4l2-gain=-1
+
+# Sharpness (integer)
+#v4l2-sharpness=-1
+
+# Chroma gain (integer)
+#v4l2-chroma-gain=-1
+
+# Automatic chroma gain (integer)
+#v4l2-chroma-gain-auto=-1
+
+# Power line frequency (integer)
+#v4l2-power-line-frequency=-1
+
+# Backlight compensation (integer)
+#v4l2-backlight-compensation=-1
+
+# Band-stop filter (integer)
+#v4l2-band-stop-filter=-1
+
+# Horizontal flip (boolean)
+#v4l2-hflip=0
+
+# Vertical flip (boolean)
+#v4l2-vflip=0
+
+# Rotate (degrees) (integer)
+#v4l2-rotate=-1
+
+# Color killer (integer)
+#v4l2-color-killer=-1
+
+# Color effect (integer)
+#v4l2-color-effect=-1
+
+# Audio volume (integer)
+#v4l2-audio-volume=-1
+
+# Audio balance (integer)
+#v4l2-audio-balance=-1
+
+# Mute (boolean)
+#v4l2-audio-mute=0
+
+# Bass level (integer)
+#v4l2-audio-bass=-1
+
+# Treble level (integer)
+#v4l2-audio-treble=-1
+
+# Loudness mode (boolean)
+#v4l2-audio-loudness=0
+
+# v4l2 driver controls (string)
+#v4l2-set-ctrls=
 
 [access] # HTTPS input
 
@@ -1156,6 +1497,80 @@
 # Sample rate (integer)
 #alsa-samplerate=48000
 
+[live555] # RTP/RTSP/SDP demuxer (using Live555)
+
+# Use RTP over RTSP (TCP) (boolean)
+#rtsp-tcp=0
+
+# Client port (integer)
+#rtp-client-port=-1
+
+# Force multicast RTP via RTSP (boolean)
+#rtsp-mcast=0
+
+# Tunnel RTSP and RTP over HTTP (boolean)
+#rtsp-http=0
+
+# HTTP tunnel port (integer)
+#rtsp-http-port=80
+
+# Kasenna RTSP dialect (boolean)
+#rtsp-kasenna=0
+
+# WMServer RTSP dialect (boolean)
+#rtsp-wmserver=0
+
+# Username (string)
+#rtsp-user=
+
+# Password (string)
+#rtsp-pwd=
+
+# RTSP frame buffer size (integer)
+#rtsp-frame-buffer-size=250000
+
+[dvb] # DVB input with v4l2 support
+
+# Probe DVB card for capabilities (boolean)
+#dvb-probe=1
+
+# Satellite scanning config (string)
+#dvb-satellite=
+
+# Scan tuning list (string)
+#dvb-scanlist=
+
+# Use NIT for scanning services (boolean)
+#dvb-scan-nit=1
+
+[linsys_sdi] # SDI Input
+
+# Link # (integer)
+#linsys-sdi-link=0
+
+# Video ID (integer)
+#linsys-sdi-id-video=0
+
+# Aspect ratio (string)
+#linsys-sdi-aspect-ratio=
+
+# Audio configuration (string)
+#linsys-sdi-audio=0=1,1
+
+# Teletext configuration (string)
+#linsys-sdi-telx=
+
+# Teletext language (string)
+#linsys-sdi-telx-lang=
+
+[dvdnav] # DVDnav Input
+
+# DVD angle (integer)
+#dvdnav-angle=1
+
+# Start directly in menu (boolean)
+#dvdnav-menu=1
+
 [concat] # Concatenated inputs
 
 # Inputs list (string)
@@ -1171,6 +1586,26 @@
 # List special files (boolean)
 #list-special-files=0
 
+[access_srt] # SRT input
+
+# Return poll wait after timeout milliseconds (-1 = infinite) (integer)
+#poll-timeout=-1
+
+# SRT latency (ms) (integer)
+#latency=120
+
+# Password for stream encryption (string)
+#passphrase=
+
+# Crypto key length in bytes (integer)
+#key-length=16
+
+# SRT Stream ID (string)
+#streamid=
+
+# SRT mode (integer)
+#mode=0
+
 [scaletempo] # Audio tempo scaler synched with rate
 
 # Stride Length (integer)
@@ -1181,6 +1616,11 @@
 
 # Search Length (integer)
 #scaletempo-search=14
+
+[soxr] # soxr
+
+# Resampling quality (integer)
+#soxr-resampler-quality=2
 
 [speex_resampler] # Speex resampler
 
@@ -1297,6 +1737,11 @@
 
 # Dry Mix (float)
 #dry-mix=0.400000
+
+[samplerate] # Secret Rabbit Code (libsamplerate) resampler
+
+# Sample rate converter type (integer)
+#src-converter-type=2
 
 [mono] # Stereo to mono downmixer
 
@@ -1477,6 +1922,29 @@
 # Synchronous writing (boolean)
 #sout-file-sync=0
 
+[access_output_srt] # SRT stream output
+
+# Return poll wait after timeout milliseconds (-1 = infinite) (integer)
+#poll-timeout=-1
+
+# SRT latency (ms) (integer)
+#latency=120
+
+# Password for stream encryption (string)
+#passphrase=
+
+# SRT maximum payload size (bytes) (integer)
+#payload-size=1316
+
+# SRT maximum bandwidth ceiling (bytes) (integer)
+#bandwidth-overhead-limit=25
+
+# Crypto key length in bytes (integer)
+#key-length=16
+
+#  SRT Stream ID (string)
+#streamid=
+
 [access_output_rist] # RIST stream output
 
 # RIST target payload size (bytes) (integer)
@@ -1553,6 +2021,62 @@
 
 # Album art filename (string)
 #album-art-filename=
+
+[freetype] # Freetype2 font renderer
+
+# Font (string)
+#freetype-font=Serif Bold
+
+# Monospace Font (string)
+#freetype-monofont=Monospace
+
+# Font size in pixels (integer)
+#freetype-fontsize=0
+
+# Relative font size (integer)
+#freetype-rel-fontsize=0
+
+# Text opacity (integer)
+#freetype-opacity=255
+
+# Text default color (integer)
+#freetype-color=16777215
+
+# Force bold (boolean)
+#freetype-bold=0
+
+# Background opacity (integer)
+#freetype-background-opacity=0
+
+# Background color (integer)
+#freetype-background-color=0
+
+# Outline opacity (integer)
+#freetype-outline-opacity=255
+
+# Outline color (integer)
+#freetype-outline-color=0
+
+# Outline thickness (integer)
+#freetype-outline-thickness=4
+
+# Shadow opacity (integer)
+#freetype-shadow-opacity=128
+
+# Shadow color (integer)
+#freetype-shadow-color=0
+
+# Shadow angle (float)
+#freetype-shadow-angle=-45.000000
+
+# Shadow distance (float)
+#freetype-shadow-distance=0.060000
+
+# Use YUVP renderer (boolean)
+#freetype-yuvp=0
+
+# Text direction (integer)
+#freetype-text-direction=0
 
 [clone] # Clone video filter
 
@@ -2071,6 +2595,19 @@ qt-privacy-ask=0
 # Workaround for France (boolean)
 #telx-french-workaround=0
 
+[aribsub] # ARIB subtitles decoder
+
+# Ignore ruby (furigana) (boolean)
+#aribsub-ignore-ruby=0
+
+# Use Core Text renderer (boolean)
+#aribsub-use-coretext=0
+
+[libass] # Subtitle renderers using libass
+
+# Additional fonts directory (string)
+#ssa-fontsdir=
+
 [ttml] # TTML subtitles decoder
 
 # Subtitle justification (integer)
@@ -2112,6 +2649,180 @@ qt-privacy-ask=0
 # Encoding Y coordinate (integer)
 #sout-dvbsub-y=-1
 
+[kate] # Kate overlay decoder
+
+# Formatted Subtitles (boolean)
+#kate-formatted=1
+
+# Use Tiger for rendering (boolean)
+#kate-use-tiger=1
+
+# Rendering quality (float)
+#kate-tiger-quality=1.000000
+
+# Default font description (string)
+#kate-tiger-default-font-desc=
+
+# Default font effect (integer)
+#kate-tiger-default-font-effect=0
+
+# Default font effect strength (float)
+#kate-tiger-default-font-effect-strength=0.500000
+
+# Default font color (integer)
+#kate-tiger-default-font-color=16777215
+
+# Default font alpha (integer)
+#kate-tiger-default-font-alpha=255
+
+# Default background color (integer)
+#kate-tiger-default-background-color=16777215
+
+# Default background alpha (integer)
+#kate-tiger-default-background-alpha=0
+
+[avcodec] # FFmpeg audio/video decoder
+
+# Direct rendering (boolean)
+#avcodec-dr=1
+
+# Show corrupted frames (boolean)
+#avcodec-corrupted=1
+
+# Error resilience (integer)
+#avcodec-error-resilience=1
+
+# Workaround bugs (integer)
+#avcodec-workaround-bugs=1
+
+# Hurry up (boolean)
+#avcodec-hurry-up=1
+
+# Skip frame (default=0) (integer)
+#avcodec-skip-frame=0
+
+# Skip idct (default=0) (integer)
+#avcodec-skip-idct=0
+
+# Allow speed tricks (boolean)
+#avcodec-fast=0
+
+# Skip the loop filter for H.264 decoding (integer)
+#avcodec-skiploopfilter=0
+
+# Debug mask (integer)
+#avcodec-debug=0
+
+# Codec name (string)
+#avcodec-codec=
+
+# Hardware decoding (string)
+#avcodec-hw=any
+
+# Threads (integer)
+#avcodec-threads=0
+
+# Advanced options (string)
+#avcodec-options=
+
+# Codec name (string)
+#sout-avcodec-codec=
+
+# Quality level (string)
+#sout-avcodec-hq=rd
+
+# Ratio of key frames (integer)
+#sout-avcodec-keyint=0
+
+# Ratio of B frames (integer)
+#sout-avcodec-bframes=0
+
+# Hurry up (boolean)
+#sout-avcodec-hurry-up=0
+
+# Interlaced encoding (boolean)
+#sout-avcodec-interlace=0
+
+# Interlaced motion estimation (boolean)
+#sout-avcodec-interlace-me=1
+
+# Video bitrate tolerance (integer)
+#sout-avcodec-vt=0
+
+# Pre-motion estimation (boolean)
+#sout-avcodec-pre-me=0
+
+# Rate control buffer size (integer)
+#sout-avcodec-rc-buffer-size=0
+
+# Rate control buffer aggressiveness (float)
+#sout-avcodec-rc-buffer-aggressivity=1.000000
+
+# I quantization factor (float)
+#sout-avcodec-i-quant-factor=0.000000
+
+# Noise reduction (integer)
+#sout-avcodec-noise-reduction=0
+
+# MPEG4 quantization matrix (boolean)
+#sout-avcodec-mpeg4-matrix=0
+
+# Minimum video quantizer scale (integer)
+#sout-avcodec-qmin=0
+
+# Maximum video quantizer scale (integer)
+#sout-avcodec-qmax=0
+
+# Trellis quantization (boolean)
+#sout-avcodec-trellis=0
+
+# Fixed quantizer scale (float)
+#sout-avcodec-qscale=3.000000
+
+# Strict standard compliance (integer)
+#sout-avcodec-strict=0
+
+# Luminance masking (float)
+#sout-avcodec-lumi-masking=0.000000
+
+# Darkness masking (float)
+#sout-avcodec-dark-masking=0.000000
+
+# Motion masking (float)
+#sout-avcodec-p-masking=0.000000
+
+# Border masking (float)
+#sout-avcodec-border-masking=0.000000
+
+# Luminance elimination (integer)
+#sout-avcodec-luma-elim-threshold=0
+
+# Chrominance elimination (integer)
+#sout-avcodec-chroma-elim-threshold=0
+
+# Specify AAC audio profile to use (string)
+#sout-avcodec-aac-profile=low
+
+# Advanced options (string)
+#sout-avcodec-options=
+
+[zvbi] # VBI and Teletext decoder
+
+# Teletext page (integer)
+#vbi-page=100
+
+# Opacity (boolean)
+#vbi-opaque=0
+
+# Teletext alignment (integer)
+#vbi-position=8
+
+# Teletext text subtitles (boolean)
+#vbi-text=0
+
+# Presentation Level (integer)
+#vbi-level=3
+
 [subsusf] # USF subtitles decoder
 
 # Formatted Subtitles (boolean)
@@ -2128,6 +2839,11 @@ qt-privacy-ask=0
 #sout-jpeg-quality=95
 
 [svcdsub] # Philips OGT (SVCD subtitle) decoder
+
+[dca] # DTS Coherent Acoustics audio decoder
+
+# DTS dynamic range compression (boolean)
+#dts-dynrng=1
 
 [file] # File logger
 
@@ -2178,6 +2894,11 @@ qt-privacy-ask=0
 # Podcast URLs list (string)
 #podcast-urls=
 
+[upnp] # Universal Plug'n'Play
+
+# Custom SAT>IP channel list URL (string)
+#satip-channellist-url=
+
 [gestures] # Mouse gestures control interface
 
 # Motion threshold (10-100) (integer)
@@ -2201,6 +2922,11 @@ qt-privacy-ask=0
 #rc-host=
 
 [motion] # motion control interface
+
+[lirc] # Infrared remote control interface
+
+# Change the lirc configuration file (string)
+#lirc-file=
 
 [netsync] # Network synchronization
 
@@ -2303,6 +3029,85 @@ qt-privacy-ask=0
 
 # Wayland display (string)
 #wl-display=
+
+[swscale] # Video scaling filter
+
+# Scaling mode (integer)
+#swscale-mode=2
+
+[mux_ts] # TS muxer (libdvbpsi)
+
+# Digital TV Standard (string)
+#sout-ts-standard=dvb
+
+# Video PID (integer)
+#sout-ts-pid-video=100
+
+# Audio PID (integer)
+#sout-ts-pid-audio=200
+
+# SPU PID (integer)
+#sout-ts-pid-spu=300
+
+# PMT PID (integer)
+#sout-ts-pid-pmt=32
+
+# TS ID (integer)
+#sout-ts-tsid=0
+
+# NET ID (integer)
+#sout-ts-netid=0
+
+# PMT Program numbers (string)
+#sout-ts-program-pmt=
+
+# Set PID to ID of ES (boolean)
+#sout-ts-es-id-pid=0
+
+# Mux PMT (requires --sout-ts-es-id-pid) (string)
+#sout-ts-muxpmt=
+
+# SDT Descriptors (requires --sout-ts-es-id-pid) (string)
+#sout-ts-sdtdesc=
+
+# Data alignment (boolean)
+#sout-ts-alignment=1
+
+# Shaping delay (ms) (integer)
+#sout-ts-shaping=200
+
+# Use keyframes (boolean)
+#sout-ts-use-key-frames=0
+
+# PCR interval (ms) (integer)
+#sout-ts-pcr=70
+
+# Minimum B (deprecated) (integer)
+#sout-ts-bmin=0
+
+# Maximum B (deprecated) (integer)
+#sout-ts-bmax=0
+
+# DTS delay (ms) (integer)
+#sout-ts-dts-delay=400
+
+# Crypt audio (boolean)
+#sout-ts-crypt-audio=1
+
+# Crypt video (boolean)
+#sout-ts-crypt-video=1
+
+# CSA Key (string)
+#sout-ts-csa-ck=
+
+# Second CSA Key (string)
+#sout-ts-csa2-ck=
+
+# CSA Key in use (string)
+#sout-ts-csa-use=1
+
+# Packet size in bytes to encrypt (integer)
+#sout-ts-csa-pkt=188
 
 [mp4] # MP4/MOV muxer
 
@@ -2630,7 +3435,7 @@ qt-privacy-ask=0
 #deinterlace-mode=auto
 
 # Video output module (string)
-#vout=
+vout=any
 
 # Video filter module (string)
 #video-filter=
@@ -2963,7 +3768,7 @@ qt-privacy-ask=0
 #media-library=0
 
 # Display playlist tree (boolean)
-#playlist-tree=0
+playlist-tree=1
 
 # Default stream (string)
 #open=

@@ -1,0 +1,16 @@
+show=drun
+width=640
+height=440
+location=center
+anchor=center
+allow_markup=true
+no_actions=true
+halign=fill
+orientation=vertical
+content_halign=fill
+insensitive=true
+allow_images=true
+image_size=36
+prompt=Search applications…
+filter_rate=100
+key_expand=Tab

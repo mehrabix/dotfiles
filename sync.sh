@@ -37,6 +37,7 @@ PATHS=(
   .config/gamemode.ini
   .config/ghostty
   .config/gtk-3.0/bookmarks
+  .config/hypr
   .config/kdeglobals
   .config/kitty
   .config/mimeapps.list
@@ -47,12 +48,15 @@ PATHS=(
   .config/qt6ct/qt6ct.conf
   .config/starship.toml
   .config/starship/layouts
+  .config/swaync
   .config/systemd/user/voxtype.service
   .config/user-dirs.dirs
   .config/user-dirs.locale
   .config/vesktop/settings/settings.json
   .config/vlc/vlcrc
+  .config/waybar
   .config/wireplumber/wireplumber.conf.d/51-bluetooth-codecs.conf
+  .config/wofi
   .config/yazi
   .config/zathura
 )

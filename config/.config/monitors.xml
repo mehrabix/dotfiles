@@ -5,7 +5,6 @@
       <x>0</x>
       <y>0</y>
       <scale>1</scale>
-      <primary>yes</primary>
       <monitor>
         <monitorspec>
           <connector>HDMI-1</connector>
@@ -24,6 +23,7 @@
       <x>1920</x>
       <y>0</y>
       <scale>1</scale>
+      <primary>yes</primary>
       <monitor>
         <monitorspec>
           <connector>eDP-1</connector>
