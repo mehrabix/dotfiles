@@ -8,7 +8,7 @@
   "margin-right": 12,
   "modules-left": ["custom/launcher", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["mpris"],
-  "modules-right": ["cpu", "memory", "pulseaudio", "network", "bluetooth", "battery", "custom/notifications", "clock", "tray", "custom/power"],
+  "modules-right": ["cpu", "memory", "pulseaudio", "network", "bluetooth", "battery", "custom/notifications", "hyprland/language", "clock", "tray", "custom/power"],
 
   "custom/launcher": {
     "format": "󰣇",
@@ -102,6 +102,15 @@
     "interval": 3,
     "tooltip": false,
     "on-click": "swaync-client -t -sw"
+  },
+
+  "hyprland/language": {
+    "format": "{}",
+    "format-en": "EN",
+    "format-fa": "FA",
+    "tooltip-format": "{long}",
+    "on-click": "/home/ahmad/.config/hypr/scripts/switch-layout.sh",
+    "on-click-right": "/home/ahmad/.config/hypr/scripts/switch-layout.sh"
   },
 
   "clock": {

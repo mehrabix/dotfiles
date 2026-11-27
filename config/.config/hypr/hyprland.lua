@@ -143,7 +143,9 @@ hl.config({
         --   US + Persian (Windows variant), switched with SUPER + Space.
         kb_layout    = "us,ir",
         kb_variant   = ",winkeys",
-        kb_options   = "lv3:ralt_alt,grp:win_space_toggle",
+        -- The layout toggle is handled by an explicit SUPER + Space bind below:
+        -- the xkb "grp:win_space_toggle" option does not fire reliably here.
+        kb_options   = "lv3:ralt_alt",
         follow_mouse = 1,
         sensitivity  = 0,
 
@@ -281,13 +283,16 @@ b(mainMod .. " + C",       hl.dsp.exec_cmd(editor),              "Code editor")
 b(mainMod .. " + X",       hl.dsp.exec_cmd("gnome-text-editor"), "Text editor")
 b(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("gnome-calculator"), "Calculator")
 
+-- Input: US <-> Persian, same shortcut as GNOME.
+b(mainMod .. " + Space",       hl.dsp.exec_cmd(scripts .. "/switch-layout.sh"), "Switch keyboard layout")
+
 -- Window management
 b(mainMod .. " + Q",          hl.dsp.window.close(),                       "Close window")
 b(mainMod .. " + SHIFT + Q",  hl.dsp.window.kill(),                        "Kill window")
 b(mainMod .. " + F",          hl.dsp.window.fullscreen({ action = "toggle", mode = "fullscreen" }), "Fullscreen")
 b(mainMod .. " + SHIFT + F",  hl.dsp.window.fullscreen({ action = "toggle", mode = "maximized" }),  "Maximize")
--- NOTE: SUPER + Space is reserved for switching US/Persian keyboard layout
--- (same shortcut as GNOME), so floating/pin moved to SHIFT/CTRL variants.
+-- NOTE: SUPER + Space switches the keyboard layout (same as GNOME), so
+-- floating/pin live on the SHIFT/CTRL variants.
 b(mainMod .. " + SHIFT + Space", hl.dsp.window.float({ action = "toggle" }), "Toggle floating")
 b(mainMod .. " + CTRL + Space",  hl.dsp.window.pin(),                       "Pin window")
 b(mainMod .. " + P",          hl.dsp.window.pseudo(),                       "Pseudo tile")

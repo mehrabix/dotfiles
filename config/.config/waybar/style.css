@@ -35,6 +35,7 @@ window#waybar:hover {
 #bluetooth,
 #battery,
 #custom-notifications,
+#language,
 #clock,
 #tray,
 #custom-power {
@@ -194,6 +195,32 @@ window#waybar:hover {
 #clock:hover {
     background: rgba(242, 200, 121, 0.16);
     color: #f2c879;
+}
+
+/* Keyboard layout (US / Persian) */
+#language {
+    color: #7fd1c8;
+    font-weight: 700;
+    min-width: 34px;
+    background: rgba(127, 209, 200, 0.08);
+    border: 1px solid rgba(127, 209, 200, 0.16);
+    padding: 0 12px;
+}
+
+#language:hover {
+    background: rgba(127, 209, 200, 0.18);
+}
+
+#language.us {
+    color: #8b98a8;
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+#language.ir {
+    color: #f2c879;
+    background: rgba(242, 200, 121, 0.12);
+    border-color: rgba(242, 200, 121, 0.24);
 }
 
 /* Tray */
