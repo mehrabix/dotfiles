@@ -32,7 +32,8 @@ hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("XCURSOR_THEME", "catppuccin-mocha-dark-cursors")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
-hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
+-- Follow the GTK (Dracula) theme so Qt apps such as VLC stay dark, like in GNOME.
+hl.env("QT_QPA_PLATFORMTHEME", "gtk3")
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
@@ -285,6 +286,14 @@ b(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("gnome-calculator"), "Calculator")
 
 -- Input: US <-> Persian, same shortcut as GNOME.
 b(mainMod .. " + Space",       hl.dsp.exec_cmd(scripts .. "/switch-layout.sh"), "Switch keyboard layout")
+
+-- Alt+Shift layout toggle (the Windows-style option from GNOME).
+-- The bind fires when the second modifier goes down; non_consuming keeps
+-- that modifier available to applications.
+b("ALT + SHIFT_L", hl.dsp.exec_cmd(scripts .. "/switch-layout.sh"), "Layout: Alt+Shift", { non_consuming = true })
+b("ALT + SHIFT_R", hl.dsp.exec_cmd(scripts .. "/switch-layout.sh"), "Layout: Alt+Shift", { non_consuming = true })
+b("SHIFT + ALT_L", hl.dsp.exec_cmd(scripts .. "/switch-layout.sh"), "Layout: Shift+Alt", { non_consuming = true })
+b("SHIFT + ALT_R", hl.dsp.exec_cmd(scripts .. "/switch-layout.sh"), "Layout: Shift+Alt", { non_consuming = true })
 
 -- Window management
 b(mainMod .. " + Q",          hl.dsp.window.close(),                       "Close window")

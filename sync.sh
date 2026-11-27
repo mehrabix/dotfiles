@@ -36,7 +36,8 @@ PATHS=(
   .config/fish
   .config/gamemode.ini
   .config/ghostty
-  .config/gtk-3.0/bookmarks
+  .config/gtk-3.0
+  .config/gtk-4.0
   .config/hypr
   .config/kdeglobals
   .config/kitty

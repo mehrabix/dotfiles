@@ -8,7 +8,7 @@
   "margin-right": 12,
   "modules-left": ["custom/launcher", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["mpris"],
-  "modules-right": ["cpu", "memory", "pulseaudio", "network", "bluetooth", "battery", "custom/notifications", "hyprland/language", "clock", "tray", "custom/power"],
+  "modules-right": ["pulseaudio", "network", "bluetooth", "battery", "custom/notifications", "hyprland/language", "clock", "tray", "custom/power"],
 
   "custom/launcher": {
     "format": "󰣇",
@@ -46,18 +46,6 @@
     "on-click": "playerctl play-pause",
     "on-click-middle": "playerctl previous",
     "on-click-right": "playerctl next"
-  },
-
-  "cpu": {
-    "format": "󰻠 {usage}%",
-    "interval": 3,
-    "tooltip": false
-  },
-
-  "memory": {
-    "format": "󰍛 {percentage}%",
-    "interval": 5,
-    "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
   },
 
   "pulseaudio": {

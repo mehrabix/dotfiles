@@ -49,8 +49,12 @@ window#waybar:hover {
 /* Launcher */
 #custom-launcher {
     color: #f2c879;
-    font-size: 18px;
-    padding: 0 12px;
+    font-size: 17px;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0;
+    margin: 5px 3px;
+    border-radius: 999px;
     background: linear-gradient(135deg, rgba(242, 200, 121, 0.16), rgba(224, 112, 95, 0.10));
     border: 1px solid rgba(242, 200, 121, 0.22);
 }
@@ -181,7 +185,11 @@ window#waybar:hover {
 
 #custom-notifications {
     color: #f2c879;
-    padding: 0 8px;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0;
+    margin: 5px 3px;
+    border-radius: 999px;
 }
 
 #clock {
@@ -241,7 +249,11 @@ window#waybar:hover {
 #custom-power {
     color: #e0705f;
     font-size: 16px;
-    padding: 0 12px;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0;
+    margin: 5px 3px;
+    border-radius: 999px;
     background: rgba(224, 112, 95, 0.10);
     border: 1px solid rgba(224, 112, 95, 0.18);
 }
