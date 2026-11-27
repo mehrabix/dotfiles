@@ -76,7 +76,9 @@ hl.config({
 
     decoration = {
         rounding       = 18,
-        rounding_power = 4.0,
+        -- 2.0 = a true circular arc (GNOME-like). Higher values (3-5) give a
+        -- "squircle" that reads as "not quite round".
+        rounding_power = 2.0,
 
         active_opacity   = 1.0,
         inactive_opacity = 0.96,
